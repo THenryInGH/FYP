@@ -1,0 +1,35 @@
+version: '3.8'
+services:
+  onos:
+    image: onosproject/onos
+    container_name: onos
+    ports:
+      - "8181:8181" # ONOS GUI
+      - "8101:8101" # ONOS CLI
+      - "6653:6653" # OpenFlow
+    networks:
+      testbed-net:
+        ipv4_address: 10.0.0.10
+  mininet:
+    image: iwaseyusuke/mininet:ubuntu-22.04
+    container_name: mininet
+    tty: true
+    privileged: true
+    volumes:
+      - ./topo:/opt/topo
+      - /lib/modules:/lib/modules:ro
+    networks:
+      testbed-net:
+        ipv4_address: 10.0.0.20
+    command: >
+      bash -c "
+        service openvswitch-switch start &&
+        mn --custom /opt/topo/custom_topo.py --topo custom_topo --controller remote,ip=10.0.0.10,port=6653 &&
+        tail -f /dev/null
+      "
+networks:
+  testbed-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/24

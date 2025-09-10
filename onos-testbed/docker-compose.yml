@@ -1,7 +1,6 @@
-version: '3.8'
 services:
   onos:
-    image: onosproject/onos
+    image: onosproject/onos:2.7.0
     container_name: onos
     ports:
       - "8181:8181" # ONOS GUI

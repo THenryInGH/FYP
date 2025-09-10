@@ -67,7 +67,7 @@
         <mxCell id="VKdG92RhQ-Mi5-ToEN4U-21" value="SubmitIntentButton" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="980" y="480" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="zoykYoXqfU_duYT_paag-1" value="" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="zoykYoXqfU_duYT_paag-1" value="" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="650" y="420" width="120" height="60" as="geometry" />
         </mxCell>
       </root>

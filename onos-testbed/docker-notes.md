@@ -30,6 +30,8 @@
 2. `docker exec -it <container><command>`= execute commands to container
     - `-i` or `--interactive`: Keeps the container's standard input (STDIN) open, which is necessary to allow commands to be typed into the terminal.
     - `-t` or `--tty`: Allocates a pseudo-terminal (a TTY) for the container. Without this, the shell prompt and command output would not be properly formatted and would be difficult to read.
+3. `docker docker network prune -f`
+4. `docker system prune -af --volumes`
 ## Docker Compose Commands (v2)
 1. `docker compose up`= start containers by following docker-compose.yml of current working directory.
 2. `docker compose down`= stop and remove containers.
@@ -44,3 +46,7 @@
     | **Custom networks** (manually created)          | Remain untouched unless explicitly removed.                                               |
 
 3. `docker compose ps`= process status of containers in compose file of current **working directory**.
+
+4. `docker compose stop`= stop containers running process but keep the containers
+
+5. `docker compose restart`= basically do `docker compose stop` then `docker compose start` (will not recreate containers to match updates in compose.yml file)

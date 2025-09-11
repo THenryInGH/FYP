@@ -33,4 +33,14 @@
 ## Docker Compose Commands (v2)
 1. `docker compose up`= start containers by following docker-compose.yml of current working directory.
 2. `docker compose down`= stop and remove containers.
+
+    | What Happens                                    | Explanation                                                                               |
+    | ----------------------------------------------- | ----------------------------------------------------------------------------------------- |
+    | **Containers deleted**                          | All containers defined in the Compose file are stopped and removed.                       |
+    | **Default networks removed**                    | If Compose created a custom bridge network (e.g., `onos-testbed_default`), it is deleted. |
+    | **Volumes** (data) **NOT deleted** (by default) | Your persistent volumes stay. Use `--volumes` to delete them too.                         |
+    | **Images NOT deleted**                          | The images you pulled or built remain.                                                    |
+    | **Port mappings cleared**                       | Port forwarding rules vanish because the containers (and their network) are removed.      |
+    | **Custom networks** (manually created)          | Remain untouched unless explicitly removed.                                               |
+
 3. `docker compose ps`= process status of containers in compose file of current **working directory**.

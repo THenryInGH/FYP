@@ -1,2 +1,9 @@
 # Virtual environment
 .venv/
+
+# Ignore llama.cpp source and build
+llm-engine/llama.cpp/
+
+# Ignore everything in models except README.md
+llm-engine/models/*
+!llm-engine/models/README.md

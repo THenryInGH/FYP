@@ -43,6 +43,16 @@
 
 3. To quit from CLI: `logout`
 
+4. Install networking packages for debug:
+    ```bash
+    docker exec -it onos bash
+    apt update && apt install -y iproute2 iputils-ping tcpdump
+    # ping: check if destination reachable
+    # ip: configure/show interfaces, routes & addresses
+    # ss: view socket connection
+    # tcpdump: sniff packets at link level
+    ```
+
 ## Container-Host Sync Strategies
 1. export networks.json using API
 2. mount config files

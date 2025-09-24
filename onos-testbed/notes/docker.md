@@ -24,7 +24,6 @@
 
 [Reference](https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository)
 
-
 ## Docker Commands
 1. `docker ps`= showing containers list (process status).
 2. `docker exec -it <container><command>`= execute commands to container
@@ -32,6 +31,9 @@
     - `-t` or `--tty`: Allocates a pseudo-terminal (a TTY) for the container. Without this, the shell prompt and command output would not be properly formatted and would be difficult to read.
 3. `docker docker network prune -f`
 4. `docker system prune -af --volumes`
+5. `docker network ls`= list networks in docker
+6. `docker inspect <network>`= inspect specify network
+
 ## Docker Compose Commands (v2)
 1. `docker compose up`= start containers by following docker-compose.yml of current working directory.
 2. `docker compose down`= stop and remove containers.

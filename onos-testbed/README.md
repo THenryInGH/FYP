@@ -3,12 +3,11 @@
 ## SDN Controller
 [**ONOS**](https://opennetworking.org/onos/)
 
-
-## Network emulator 
-[**Mininet**](https://mininet.org/)
-
 ## Switches
 [**Open vSwitch**](https://www.openvswitch.org/)
+
+- Open vSwitch version: `3.3.0`
+- OpenFlow version support: `1.0 - 1.5`
 
 ## Container
 [**Docker**](https://www.docker.com/)
@@ -18,6 +17,8 @@
     - server: `28.4.0`
 2. Docker compose: `v2.39.2`
 
+## Network emulator 
+[**Mininet**](https://mininet.org/)
 
 ## Steps to setup
 1. make sure on the right location:

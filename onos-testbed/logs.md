@@ -43,3 +43,12 @@ done
 sudo ip link delete br-xxxxxxxxxxxx
 ```
 ## Setup environment
+- Setup ovs
+```bash
+sudo apt update 
+sudo apt install openvswitch-switch
+# verify installation
+sudo ovs-vsctl show
+# sudo is required as this command is accessing ovsdb-server
+```
+- Setup ONOS

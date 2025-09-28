@@ -139,3 +139,78 @@ sudo ovs-vsctl show
   tail -f /opt/onos/apache-karaf-4.2.9/data/log/onos.log
   # check if karaf port is listening  
   ```
+
+  5. [Access to ONOS CLI and GUI](/onos-testbed/notes/onos.md#logs)
+  
+# 4. Setup a simple testbed locally
+  ```bash
+  # 1. Create namespaces (end hosts)
+  sudo ip netns add h1
+  sudo ip netns add h2
+
+  # 2. Create veth pairs 
+  sudo ip link add veth-br-h1 type veth peer name veth-h1-br
+  sudo ip link add veth-br-h2 type veth peer name veth-h2-br
+
+  # 3. Assign veth to netns
+  sudo ip link set veth-br-h1 netns h1
+  sudo ip link set veth-br-h2 netns h2
+
+  # 4. Assign IPs inside namespace (for L3 purpose)
+  sudo ip netns exec h1 ip addr add 10.0.0.1/24 dev veth-br-h1
+  sudo ip netns exec h1 ip link set veth-br-h1 up
+  
+  sudo ip netns exec h2 ip addr add 10.0.0.2/24 dev veth-br-h2
+  sudo ip netns exec h2 ip link set veth-br-h2 up
+
+  # 5. Create OVS bridge & attach ports
+  sudo ovs-vsctl add-br s1
+  sudo ovs-vsctl add-port s1 veth-h1-br
+  sudo ovs-vsctl add-port s1 veth-h2-br
+
+  # 6. Activate openflow applications on ONOS
+  ssh onos-local
+  apps -a -s
+  app activate org.onosproject.openflow
+  # Verification
+  # show listening port 
+  ss -tulpn | grep 6653
+  # check which process own the port
+  sudo lsof -i :6653
+  # Instead of just looking at the server, this initiates a TCP handshake to confirm the port is reachable.
+  nc -zv 127.0.0.1 6653
+
+  # 7. Point OVS to ONOS controller
+  sudo ovs-vsctl set-controller s1 tcp:127.0.0.1:6653
+
+  # 8. Verify ONOS sees the devices
+  curl -u onos:rocks http://127.0.0.1:8181/onos/v1/devices
+
+  # 9. Step 8 showing failed connection (OpenFlow version mismatch, ONOS use OpenFlow 13 by default, force ovs to use it)
+  sudo ovs-vsctl set bridge s1 protocols=OpenFlow13
+  # To check OpenFlow version ovs using
+  sudo ovs-vsctl get bridge <bridge-name> protocols
+  # [] output indicate, no specific version is set
+
+  # 10. ONOS cannot view namespace by default unless namespaces transfered traffic using ovs
+  sudo ip netns exec h1 ping -c 3 10.0.0.2 
+
+  # 11. Ping failed, interfaces not up
+  # Note: Interfaces assigned to namespaces are invisible in host ip addr
+  sudo ip link set veth-h1-br up 
+  sudo ip link set veth-h2-br up
+  # ovs-system can be ignored (dummy interface created by OVS to manage its internal datapath )
+  # s1: need to bring it up
+  sudo ip link set s1 up
+
+  # 12. s1 state change from DOWN to UNKNOWN and ping failed
+  # UNKNOWN is because no IP is assigned to s1
+  # Forgot to activate forwarding on onos
+  ssh onos-local
+  app activate org.onosproject.fwd
+
+  # Success!!!
+  ```
+
+
+

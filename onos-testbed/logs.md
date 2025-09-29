@@ -212,5 +212,7 @@ sudo ovs-vsctl show
   # Success!!!
   ```
 
+# 5. REST API Learning and Usage
+[Note](/onos-testbed/notes/rest-api.md)
 
 

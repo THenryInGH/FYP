@@ -136,7 +136,7 @@ sudo ovs-vsctl show
   # check ONOS log
   tail -f /opt/onos/apache-karaf-4.2.9/data/log/karaf.log
   # the log that will start if ONOS boot successfully
-  tail -f /opt/onos/apache-karaf-4.2.9/data/log/onos.log
+  tail -f /opt/onos/apache-karaf-4.2.9/data/log/karaf.log
   # check if karaf port is listening  
   ```
 
@@ -215,4 +215,32 @@ sudo ovs-vsctl show
 # 5. REST API Learning and Usage
 [Note](/onos-testbed/notes/rest-api.md)
 
+# 6. Bash Learning 
+[Note](/onos-testbed/notes/bash.md)
 
+# 7. Testbed Script 
+- [Clean up](/onos-testbed/scripts/clean-topo.sh)
+- [Test simple topo](/onos-testbed/scripts/test-topo.sh)
+  
+  `ping` failed from h1 to h2
+  - the folder of `org.onosproject.fwd` even missing in `/opt/onos/apps`
+
+  Cause:
+
+  Solution:
+  - install back onos-apps-fwd from `feature:repo-add mvn:org.onosproject/onos-apps-fwd/2.7.0/xml/features` in onos-cli
+  - `feature:install onos-apps-fwd `
+  - However, GUI and `apps -a -s` still cannot find org.onosproject.fwd
+  - ONOS has two layers, **karaf** layer (`feature:list`) and **GUI** layer (`apps -a -s`) 
+  - Can verify by checking are all hosts exist on ONOS GUI and `sudo ovs-ofctl -O OpenFlow13 dump-flows s1`
+  - Planning to 
+- [Tree topo](/onos-testbed/scripts/tree-topo.sh)
+  - Testing:
+    - show fwd app running, show netns, show veth, show ovs, show ovs_of
+- [Mesh topo](/onos-testbed/scripts/mesh-topo.sh)
+  - `fwd` missing happened again
+
+# 8. Testbed planning update
+- keep topology single subnet
+- use Intent based framework first
+- discover cross subnet and custom intent compiler

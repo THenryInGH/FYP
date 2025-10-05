@@ -1,10 +1,10 @@
 # [**Open vSwitch**](https://www.openvswitch.org/)
 - open source multilayer switch
+- it behave like a L2 switch by default
+- need configuration or enable ONOS application to route across network
 
 ---
 ## 🛠️ OVS “User Manual” (FYP-oriented)
-
-Below is a curated, simplified guide to OVS commands and workflows you’ll need. Think of it as your personal OVS reference for testbed building.
 
 ---
 
@@ -102,7 +102,7 @@ These are useful for debugging or introspection.
 
 ---
 
-## 3. Typical Workflow in Your Testbed
+## 3. Typical Workflow in Testbed
 
 Putting it all together, here’s how you’ll likely proceed:
 

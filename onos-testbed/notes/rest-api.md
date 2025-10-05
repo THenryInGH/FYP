@@ -33,3 +33,4 @@ GET https://api.github.com/users/Henry/repos
 ### Authentication
 - Default: `username = onos`, `password = rocks`
 - Send with `curl -u onos:rocks ...`
+- [Refer Wiki](https://wiki.onosproject.org/display/ONOS/Appendix+B%3A+REST+API)

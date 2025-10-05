@@ -12,10 +12,10 @@
     - [Official Installation Guide](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html)
 
 ## Framework
-### Transformers from Hugging Face
-[Setup guide](https://huggingface.co/docs/transformers/en/installation?virtual=uv&install=uv)
 
-### llama.cpp
+### llama.cpp from ggml-org
+[GitHub](https://github.com/ggml-org/llama.cpp/tree/master)
+
 [Setup guide](https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md)
 
 1. Install prerequisites 
@@ -76,6 +76,10 @@
     --port 8080
     ```
 
+### Transformers from Hugging Face
+[Docs](https://huggingface.co/docs/transformers/en/index)
+[Setup guide](https://huggingface.co/docs/transformers/en/installation?virtual=uv&install=uv)
+
 ## Models
 - Refer to [models README](models/README.md)
 - To install model using `wget` from Hugging Face:
@@ -85,3 +89,15 @@
     4. Right click download icon and copy the `link`
     5. Delete `?download=True` at the end of `link`
     6. wget `link` 
+
+- Running GPT-OSS-20B
+```bash
+llama-server \
+  --model ~/Documents/Henry/FYP/llm-engine/models/gpt-oss/gpt-oss-20b-mxfp4.gguf \
+  --n-gpu-layers 40 \
+  --ctx-size 4096 \
+  --threads 8 \
+  --port 8080
+
+```
+

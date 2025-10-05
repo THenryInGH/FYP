@@ -101,4 +101,7 @@ Output this when typing `nvidia-smi`:
         - both NVML and kernel module match
 
 2. `16/9/25` llama.cpp setup:
-    - 
+    - refer setup guide at [README](/llm-engine/README.md/)
+
+3. `5/10/25` load the model: gpt-oss-20b
+    - refer command at [README](/llm-engine/README.md/)

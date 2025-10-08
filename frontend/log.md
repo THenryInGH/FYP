@@ -14,3 +14,12 @@
 
 # 4. Update chat interface
 
+# 5. Create `.env` to smooth ONOS API calling
+- same level as package.json
+- For vite, variables must start with `VITE_`, or they won't be exposed to the frontend
+- gitignore this for security purpose
+
+# 6. Create utils (utilities)
+- where to keep small, reusable logic that isn't tied to specific page or component, like fetching APIs, formatting data, or handle time over conversions
+- just like a toolbox
+- CORS (Cross-Origin Resource Sharing): a mechanism that prevents frontend to request data directly from other domain

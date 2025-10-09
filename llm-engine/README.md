@@ -101,3 +101,9 @@ llama-server \
 
 ```
 
+## Agent 
+### Model loading and API handling
+[Guide from llama.cpp github discussion](https://github.com/ggml-org/llama.cpp/discussions/15396)
+### Handle LLM prompts and response
+**For GPT-OSS:**
+1. [Harmony format](https://cookbook.openai.com/articles/openai-harmony)

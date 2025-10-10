@@ -1,5 +1,6 @@
 1. GPT-OSS-20B (OpenAI)
     - [source from ggml-org](https://huggingface.co/ggml-org/gpt-oss-20b-GGUF)
+    - [OpenAI docs](https://openai.com/index/introducing-gpt-oss/)
 
 2. Deepseek-coder-6.7b-instruct (DeepSeek)
     - [source from The Bloke](https://huggingface.co/TheBloke/deepseek-coder-6.7B-instruct-GGUF)

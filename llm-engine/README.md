@@ -7,16 +7,16 @@
 
 ## Environment
 - NVIDIA driver version: `570.172.09`
-    - [Official Installation Guide](https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/index.html#ubuntu-installation)
+    - [Official Installation Guide][1]
 - CUDA: `12.8`
-    - [Official Installation Guide](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html)
+    - [Official Installation Guide][2]
 
 ## Framework
 
 ### llama.cpp from ggml-org
-[GitHub](https://github.com/ggml-org/llama.cpp/tree/master)
+[GitHub][3]
 
-[Setup guide](https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md)
+[Setup guide][4]
 
 1. Install prerequisites 
     ```bash
@@ -103,7 +103,38 @@ llama-server \
 
 ## Agent 
 ### Model loading and API handling
-[Guide from llama.cpp github discussion](https://github.com/ggml-org/llama.cpp/discussions/15396)
+[Guide from llama.cpp github discussion][5]
 ### Handle LLM prompts and response
 **For GPT-OSS:**
-1. [Harmony format](https://cookbook.openai.com/articles/openai-harmony)
+1. [Harmony format][6]
+
+## LLM Response control
+### Few-shot prompting 
+### RAG (Retrieve Augmented Generation)
+- Feed data similar to the prompt to LLM to produce more accurate response. 
+**Process**:
+1. **Data ingestion**: split data in **chunks** (per word/sentence/paragraph)
+2. **Embedding**: embed **chunks** using embeddings model of corresponding model, e.g GPT-OSS using [RoPE][7]
+3. **Retrieval**: When a query come in, **similar chunks** are retrieved using vector similarity search.
+4. **Generation**: Retrieved text is appended to LLM to produce grounded respnse.
+
+### [GraphRAG from Microsoft][8]
+- similar to traditional RAG, just DIFFERENT in DATA HANDLING
+- instead of spliting data into chunks graphRAG make data a graph with entities and relationship with the help of LLM
+
+
+[1]: https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/index.html#ubuntu-installation "NVIDIA driver installation guide"
+
+[2]: https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html "CUDA installation guide"
+
+[3]: https://github.com/ggml-org/llama.cpp "llama.cpp GitHub"
+
+[4]: https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md "llama.cpp local build guide"
+
+[5]: https://github.com/ggml-org/llama.cpp/discussions/15396 "gpt-oss on llama.cpp guide"
+
+[6]: https://cookbook.openai.com/articles/openai-harmony "OpenAI harmony format desc"
+
+[7]: https://arxiv.org/abs/2104.09864 "RoPE"
+
+[8]: https://microsoft.github.io/graphrag/ "GraphRAG official link"

@@ -81,6 +81,10 @@
 [Setup guide](https://huggingface.co/docs/transformers/en/installation?virtual=uv&install=uv)
 
 ## Models
+### Learning materials:
+1. [**Attention is all you need][11]
+2. [Build LLM from scratch][12]
+### Models Using:
 - Refer to [models README](models/README.md)
 - To install model using `wget` from Hugging Face:
     1. Select desired model
@@ -91,17 +95,20 @@
     6. wget `link` 
 
 - Running GPT-OSS-20B
+- Ref: [Running GPT-OSS-120B using RTX 3080 Ti][10]
 ```bash
+cd FYP
 llama-server \
   --model ~/Documents/Henry/FYP/llm-engine/models/gpt-oss/gpt-oss-20b-mxfp4.gguf \
-  --n-gpu-layers 40 \
+  --n-gpu-layers 999 \
   --ctx-size 4096 \
-  --threads 8 \
+  --threads 16 \ 
   --port 8080
 
 ```
 
 ## Agent 
+### [llama-server](/llm-engine/log.md#llama-server)
 ### Model loading and API handling
 [Guide from llama.cpp github discussion][5]
 ### Handle LLM prompts and response
@@ -122,6 +129,8 @@ llama-server \
 - similar to traditional RAG, just DIFFERENT in DATA HANDLING
 - instead of spliting data into chunks graphRAG make data a graph with entities and relationship with the help of LLM
 
+## Tools
+1. [tmux][9]
 
 [1]: https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/index.html#ubuntu-installation "NVIDIA driver installation guide"
 
@@ -138,3 +147,11 @@ llama-server \
 [7]: https://arxiv.org/abs/2104.09864 "RoPE"
 
 [8]: https://microsoft.github.io/graphrag/ "GraphRAG official link"
+
+[9]: https://github.com/tmux/tmux/wiki "tmux wiki"
+
+[10]: https://github.crookster.org/running-gpt-oss-120b-on-rtx-3080-ti-12-gb-at-home/ "Running GPT-OSS-120B using RTX 3080 Ti"
+
+[11]: https://arxiv.org/abs/1706.03762 "Transformers foundation paper"
+
+[12]: https://www.google.com.my/books/edition/Build_a_Large_Language_Model_From_Scratc/uSUmEQAAQBAJ?hl=en&gbpv=0 "Build LLM from scratch"

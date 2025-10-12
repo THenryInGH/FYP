@@ -30,21 +30,9 @@ Example intents:
   ---
 
 ## Architecture
-High-level flow:
+<!--Architecture diagram here-->
 
-```
-User → Web UI (Vite + React + Tailwind)
-   → Backend API <!-- TODO: language/framework -->
-      → OpenAI API (intent parsing, planning, validation)
-      → SDN Controller(s) <!-- TODO: ONOS / ODL / vendor -->
-   ← Results, preview, and execution logs
-```
 
-Key components:
-- Frontend: Vite + React + TypeScript + Tailwind CSS (SWC for fast JSX/TS transforms).
-- Backend: <!-- TODO: e.g., Node/Express, Python/FastAPI, Go/Fiber -->
-- SDN: <!-- TODO: e.g., ONOS, OpenDaylight, Faucet, vendor APIs -->
-- Persistence/telemetry: <!-- TODO: DB/metrics if used -->
 
 ---
 
@@ -52,33 +40,20 @@ Key components:
 ```
 FYP/
 ├─ frontend/
-│  ├─ index.html
-│  ├─ src/
-│  │  ├─ main.tsx
-│  │  ├─ index.css  (imports Tailwind)
-│  │  └─ vite-env.d.ts
-│  ├─ vite.config.ts
-│  ├─ tsconfig.app.json
-│  ├─ tsconfig.node.json
-│  ├─ tsconfig.json
-│  ├─ eslint.config.js
-│  └─ public/
-│     └─ fyp-logo.png (favicon)
-└─ backend/  <!-- TODO: add or link -->
+
 ```
 
 ---
 
 ## Tech stack
+- SDN Testbed
 - Frontend
   - Vite + React + TypeScript
   - SWC React plugin
   - Tailwind CSS (via @tailwindcss/vite)
   - ESLint (TS + React Hooks)
-- LLM platform
-  - OpenAI API (chat completions / responses with tool calling) <!-- TODO -->
-- Backend & SDN
-  - <!-- TODO: framework + SDN controller(s) -->
+- LLM Engine
+  - Llama-server (chat completions / responses with tool calling)
 
 ---
 
@@ -87,4 +62,31 @@ FYP/
 ### Prerequisites
 - Node.js 18+ (LTS recommended)
 - Package manager: npm, pnpm, or yarn
-- OpenAI API Key (https://platform.openai.com/)
+
+### Ports using
+1. `8080`: llama-server end point
+2. `5173`: React frontend
+3. `6653`: ONOS Listening OpenFlow
+4. `8181`: ONOS GUI 
+
+### Hosts Specification
+#### Host A
+#### Host B (GPU)
+- CPU: 
+- GPU:
+- Memory: 64 GB
+- OS: 
+- No. of threads: 16
+
+### Setup steps
+1. Running model using llama-server
+```bash
+cd FYP
+llama-server \
+  --model path to gpt-oss-20b-mxfp4.gguf \
+  --n-gpu-layers 999 \ # offload maximum possible layers of transformer to GPU
+  --ctx-size 4096 \
+  --threads 16 \
+  --port 8080
+ 
+```

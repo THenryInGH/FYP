@@ -10,3 +10,6 @@ llm-engine/models/*
 
 # Ignore logs and database files
 *.log
+
+# Ignore Python cache files
+llm-engine/__pycache__/

@@ -244,3 +244,28 @@ sudo ovs-vsctl show
 - keep topology single subnet
 - use Intent based framework first
 - discover cross subnet and custom intent compiler
+
+# 9. ONOS problem (Openflow deleted itself)
+## Solve with ONOS reinstallation first 
+```bash
+systemctl stop onos
+cd /opt
+sudo rm -rf onos
+
+# untar
+sudo tar xzf onos-2.7.0.tar.gz
+# rename dir
+sudo mv onos-2.7.0 onos
+
+# copy the init file
+sudo cp /opt/onos/init/onos.initd /etc/init.d/onos
+# steps for systemd based system
+sudo cp /opt/onos/init/onos.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable onos
+
+# remove old fingerprint in ssh
+ssh-keygen -f '/home/henry/.ssh/known_hosts' -R '[127.0.0.2]:8101'
+```
+
+## Try debug later bah, many bugs, crying

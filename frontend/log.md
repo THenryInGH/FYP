@@ -23,3 +23,7 @@
 - where to keep small, reusable logic that isn't tied to specific page or component, like fetching APIs, formatting data, or handle time over conversions
 - just like a toolbox
 - CORS (Cross-Origin Resource Sharing): a mechanism that prevents frontend to request data directly from other domain
+
+# 7. Integration with ONOS
+
+# 8. CORS (Cross-Origin Resource Sharing)

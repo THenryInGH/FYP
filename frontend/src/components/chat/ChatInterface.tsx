@@ -3,11 +3,14 @@ import IntentInput from "./IntentInput";
 import IntentOutput from "./IntentOutput";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+// React.FC: typescript type helper that tells compiler this is a React Functional Component, will return JSX.Element
+
 const ChatInterface: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [width, setWidth] = useState(33); // percentage of screen width
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<string[]>([]); // a hook of a string array
 
+  // function to handle message submission by appending to messages array
   const handleSubmit = (message: string) => {
     setMessages((prev) => [...prev, `User: ${message}`, "Agent: (mock reply)"]);
   };

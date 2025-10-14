@@ -82,7 +82,7 @@
 
 ## Models
 ### Learning materials:
-1. [**Attention is all you need][11]
+1. [Attention is all you need][11]
 2. [Build LLM from scratch][12]
 ### Models Using:
 - Refer to [models README](models/README.md)
@@ -101,7 +101,7 @@ cd FYP
 llama-server \
   --model ~/Documents/Henry/FYP/llm-engine/models/gpt-oss/gpt-oss-20b-mxfp4.gguf \
   --n-gpu-layers 999 \
-  --ctx-size 4096 \
+  --ctx-size 16384 \
   --threads 16 \ 
   --port 8080
 
@@ -131,6 +131,12 @@ llama-server \
 
 ## Tools
 1. [tmux][9]
+    - create using `tmux new -s <session-name>`
+    - attach using `tmux attach -t <session-name>`
+    - detach using `Ctrl + b`, then press `d`
+    - list using `tmux ls`  
+    - scroll using 
+2. [FastAPI][13]
 
 [1]: https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/index.html#ubuntu-installation "NVIDIA driver installation guide"
 
@@ -155,3 +161,5 @@ llama-server \
 [11]: https://arxiv.org/abs/1706.03762 "Transformers foundation paper"
 
 [12]: https://www.google.com.my/books/edition/Build_a_Large_Language_Model_From_Scratc/uSUmEQAAQBAJ?hl=en&gbpv=0 "Build LLM from scratch"
+
+[13]: https://fastapi.tiangolo.com/ "FastAPI official web"

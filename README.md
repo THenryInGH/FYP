@@ -64,29 +64,33 @@ FYP/
 - Package manager: npm, pnpm, or yarn
 
 ### Ports using
-1. `8080`: llama-server end point
+#### Host A
+1. 
 2. `5173`: React frontend
 3. `6653`: ONOS Listening OpenFlow
 4. `8181`: ONOS GUI 
-
+#### Host B
+1. `0.0.0.0:5000`: agent endpoint (FastAPI)
+2. `localhost:8080`: llama-server end point
 ### Hosts Specification
 #### Host A
 #### Host B (GPU)
 - CPU: 
-- GPU:
+- GPU: Nvdia RTX 3080 Ti (12 GB VRAM)
 - Memory: 64 GB
-- OS: 
+- OS: Ubuntu 24
 - No. of threads: 16
 
 ### Setup steps
+#### Host B
 1. Running model using llama-server
 ```bash
 cd FYP
-llama-server \
-  --model path to gpt-oss-20b-mxfp4.gguf \
-  --n-gpu-layers 999 \ # offload maximum possible layers of transformer to GPU
-  --ctx-size 4096 \
-  --threads 16 \
-  --port 8080
- 
+llama-server -m ./llm-engine/models/gpt-oss/gpt-oss-20b-mxfp4.gguf --n-cpu-moe 36 --n-gpu-layers 999 -c 0 --port 8080 
 ```
+
+2. start FastAPI server
+```bash
+cd FYP/llm-engine
+uvicorn agent:app --host 0.0.0.0 --port 5000
+``` 

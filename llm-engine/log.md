@@ -224,3 +224,8 @@ Output this when typing `nvidia-smi`:
     - With jinja
         - good reusability 
         - but more complex to setup
+
+6. context-window too small
+
+[**testing on model efficiency**](/llm-engine/testing.md#1-testing-on-model-efficiency)
+

@@ -2,8 +2,19 @@ from fastapi import FastAPI, Request
 from pydantic import BaseModel
 # import llama_client 
 import groq_client as llama_client
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="FYP Agent API")
+
+# Allow your frontend device IP/domain
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # or replace * with your frontend IP if you want stricter
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # Define request body model
 class UserRequest(BaseModel):

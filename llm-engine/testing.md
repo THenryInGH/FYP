@@ -16,3 +16,15 @@ When you set `--n-cpu-moe N`, you are telling the runtime to offload N MoE block
 So, increasing n-cpu-moe reduces VRAM usage but increases CPU load and memory transfer overhead.
 
 **Number of MoE layers offloaded to CPU:**
+
+# 2. Verification command use to check is LLM agent api working
+```bash
+# at another host
+curl http://10.100.10.15:5000
+# output should be : {"message":"FYP Agent is running 🚀"}
+
+curl -X POST "http://10.100.10.15:5000/generate" \
+     -H "Content-Type: application/json" \
+     -d '{"prompt": "Make sure 10.0.0.1 can communicate 10.0.0.2"}'
+
+```

@@ -3,19 +3,20 @@ import os
 from groq import Groq
 import json
 import onos_client
+from chat_history import add_message, get_history
 load_dotenv() # Load environment variables from .env file
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 MODEL = "openai/gpt-oss-20b"
 
 def send_prompt (user_prompt):
-    # construct prompt manually
-    system_prompt = (
-        "You are FYP Agent, an AI assistant for ONOS SDN controller users. "
-        "You take user intents and produce ONOS Intent Framework JSON configurations."
-        "Your developer is Henry."
-        "Refer to the examples to learn the format and provide configuration based on the current network information provided."
-    ) # () in python is for multi-line string, can also use ''' or """
+    
+    # system_prompt = (
+    #     "You are FYP Agent, an AI assistant for ONOS SDN controller users. "
+    #     "You take user intents and produce ONOS Intent Framework JSON configurations."
+    #     "Your developer is Henry."
+    #     "Refer to the examples to learn the format and provide configuration based on the current network information provided."
+    # ) # () in python is for multi-line string, can also use ''' or """
 
     # get sample json 
     samples_json = get_samples_json(user_prompt)
@@ -29,7 +30,9 @@ def send_prompt (user_prompt):
       Now process this user request:
       {user_prompt}   
     """
-    # use f""" """ to allow formatted multiple lines prompt
+    
+    # add user message to chat history
+    add_message("user", full_prompt)
 
     # call GROQ API
     client = Groq(
@@ -37,14 +40,14 @@ def send_prompt (user_prompt):
     )
 
     chat_completion = client.chat.completions.create(
-    messages=[
-        {"role": "system", "content": system_prompt}, 
-        {"role": "user", "content": full_prompt}
-    ],
+    messages=get_history(),
     model=MODEL,
 )
 
-    # return response.json()
+    # add assistant message to chat history
+    add_message("assistant", chat_completion.choices[0].message.content)
+
+    # return response content
     return chat_completion.choices[0].message.content
 
 

@@ -27,3 +27,12 @@
 # 7. Integration with ONOS
 
 # 8. CORS (Cross-Origin Resource Sharing)
+- browser security feature that prevents a web app (running on one origin) from requesting data from another origin unless that server explicitly allows it.
+- Happened when frontend is access using localhost from vscode remote access extension, so browser will see that the frontend is running locally but ONOS is on remote access server
+- Tried to solve it using Nginx while onbroading the frontend to [domain](http://henryfyp.my)
+
+
+# 9. Hooks and utils
+
+# 10. Interface in javascript
+- 

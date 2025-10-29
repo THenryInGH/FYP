@@ -36,3 +36,6 @@
 
 # 10. Interface in javascript
 - 
+
+# 11. Domain onboard error
+- havent resolved by changed dir permission

@@ -1,13 +1,23 @@
 const LLM_API = import.meta.env.VITE_LLM_API;
 
-// Differences between export and export default
-// export default: only one per file, can be imported with name directly
-// export: multiple per file, must be imported with the {} e.g. import { useState } from 'react';
+export async function sendPromptToLLM(prompt: string) {
+  try {
+    const response = await fetch(LLM_API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ prompt }),
+    });
 
-// async function tell JS the function contains asynchronous operations (code takes time)
-// e.g. fetching from an API, reading a file, waiting for user input
-
-
-// export async function sendPrompt(prompt: string): Promise<string> {
-//     try 
-// }
+    const data = await response.json();
+    if (data.status === "success") {
+      return data.response;
+    } else {
+      throw new Error(data.message || "Unknown error");
+    }
+  } catch (error) {
+    console.error("Error contacting LLM API:", error);
+    return "Error: Unable to contact LLM Agent.";
+  }
+}

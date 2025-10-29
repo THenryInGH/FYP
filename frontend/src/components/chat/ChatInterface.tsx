@@ -1,23 +1,27 @@
 import React, { useState } from "react";
 import IntentInput from "./IntentInput";
-import IntentOutput from "./IntentOutput";
+import { sendPromptToLLM } from "../../utils/llmApi";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
-// React.FC: typescript type helper that tells compiler this is a React Functional Component, will return JSX.Element
 
 const ChatInterface: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [width, setWidth] = useState(33); // percentage of screen width
-  const [messages, setMessages] = useState<string[]>([]); // a hook of a string array
+  const [width, setWidth] = useState(33);
+  const [messages, setMessages] = useState<{ role: string; text: string }[]>([]);
 
-  // function to handle message submission by appending to messages array
-  const handleSubmit = (message: string) => {
-    setMessages((prev) => [...prev, `User: ${message}`, "Agent: (mock reply)"]);
+  const handleSubmit = async (message: string) => {
+    // Add user message immediately
+    setMessages((prev) => [...prev, { role: "User", text: message }]);
+
+    // Call backend
+    const reply = await sendPromptToLLM(message);
+
+    // Add agent reply
+    setMessages((prev) => [...prev, { role: "Agent", text: reply }]);
   };
 
   return (
     <>
-      {/* Toggle button (floating on the right middle) */}
+      {/* Toggle button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="fixed top-1/2 right-0 z-40 transform -translate-y-1/2 bg-gray-800 text-white p-2 rounded-l-lg shadow-lg hover:bg-gray-700 transition"
@@ -41,7 +45,14 @@ const ChatInterface: React.FC = () => {
           {/* Chat messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-2 text-sm">
             {messages.map((msg, i) => (
-              <p key={i} className="text-gray-800">{msg}</p>
+              <p
+                key={i}
+                className={`${
+                  msg.role === "User" ? "text-blue-700" : "text-green-800"
+                }`}
+              >
+                <strong>{msg.role}:</strong> {msg.text}
+              </p>
             ))}
           </div>
 

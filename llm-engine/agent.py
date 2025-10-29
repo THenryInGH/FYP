@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
-import llama_client 
+# import llama_client 
+import groq_client as llama_client
 
 app = FastAPI(title="FYP Agent API")
 

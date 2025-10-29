@@ -13,3 +13,6 @@ llm-engine/models/*
 
 # Ignore Python cache files
 llm-engine/__pycache__/
+
+# environment variables file
+.env

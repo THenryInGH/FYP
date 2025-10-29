@@ -229,3 +229,14 @@ Output this when typing `nvidia-smi`:
 
 [**testing on model efficiency**](/llm-engine/testing.md#1-testing-on-model-efficiency)
 
+7. Verification command use to check is LLM agent api working
+```bash
+# at another host
+curl http://10.100.10.15:5000
+# output should be : {"message":"FYP Agent is running 🚀"}
+
+curl -X POST "http://10.100.10.15:5000/generate" \
+     -H "Content-Type: application/json" \
+     -d '{"prompt": "Hello, what can you do?"}'
+
+```

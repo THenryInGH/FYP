@@ -21,58 +21,27 @@ export default function MetricsGrid() {
     return () => clearInterval(interval);
   }, []);
 
-  if (!metrics) return <div>Loading metrics...</div>;
+  if (!metrics) return <div className="text-gray-500">Loading metrics...</div>;
 
-  const total = Object.values(metrics).reduce(
-    (sum: number, value: number) => sum + value,
-    0
-  );
+  // Only include 4 items (exclude total)
+  const entries = [
+    { label: "Devices", value: metrics.devices },
+    { label: "Hosts", value: metrics.hosts },
+    { label: "Links", value: metrics.links },
+    { label: "Flows", value: metrics.flows },
+  ];
 
   return (
-    <div className="grid grid-cols-5 gap-4">
-      {Object.entries(metrics).map(([key, value]) => (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-4">
+      {entries.map(({ label, value }) => (
         <div
-          key={key}
-          style={{
-            backgroundColor: "var(--bg-card)",
-            border: "1px solid var(--border-color)",
-            borderRadius: "12px",
-            padding: "1.5rem",
-            color: "var(--text-primary)",
-          }}
+          key={label}
+          className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 p-6 text-center"
         >
-          <h3 className="text-lg font-semibold capitalize">{key}</h3>
-          <p
-            style={{
-              fontSize: "2.5rem",
-              fontWeight: "bold",
-              color: "var(--accent-blue)",
-            }}
-          >
-            {value}
-          </p>
+          <h3 className="text-lg font-semibold text-gray-800">{label}</h3>
+          <p className="text-4xl font-bold text-gray-900 mt-2">{value}</p>
         </div>
       ))}
-      <div
-        style={{
-          backgroundColor: "var(--bg-card)",
-          border: "1px solid var(--border-color)",
-          borderRadius: "12px",
-          padding: "1.5rem",
-          color: "var(--text-primary)",
-        }}
-      >
-        <h3 className="text-lg font-semibold">Total</h3>
-        <p
-          style={{
-            fontSize: "2.5rem",
-            fontWeight: "bold",
-            color: "var(--accent-green)",
-          }}
-        >
-          {total}
-        </p>
-      </div>
     </div>
   );
 }

@@ -32,10 +32,14 @@
 - Tried to solve it using Nginx while onbroading the frontend to [domain](http://henryfyp.my)
 
 
-# 9. Hooks and utils
+# 9. Hooks
+- Hooks are React functions (usually starting with use) that let you reuse component logic, especially those involving state, side effects, or context.
+- use to avoid repetitive logic across components, eg. fetching data from API or handling form inputs
 
-# 10. Interface in javascript
-- 
+# 10. Interface in typescript
+- interfaces in Java enforced class to follow what methods must implement
+- Javascript dont have built in interface feature
+- Typescript make Javascript can use interface like Java, allowing developers to define and enforce object/class structures at compile time (only for type checking, disappears at runtime)
 
 # 11. Domain onboard error
 - havent resolved by changed dir permission

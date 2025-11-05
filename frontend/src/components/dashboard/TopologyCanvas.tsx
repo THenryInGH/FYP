@@ -213,7 +213,8 @@ function TopologyCanvas() {
   }, [nodes, links]);
 
   return (
-    <div className="bg-gray-200 h-96 relative rounded-xl overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 p-2 h-96 relative overflow-hidden">
+
       <canvas ref={canvasRef} className="w-full h-full" />
       <Legend />
     </div>

@@ -1,7 +1,6 @@
 // acts as a wrapper for all pages, includes navbar, footer, and chat interface
 import NavBar from './components/layout/NavBar';
 import Footer from './components/layout/Footer';
-import ChatInterface from './components/chat/ChatInterface';
 import { Outlet } from 'react-router-dom';
 
 function App() {
@@ -13,7 +12,6 @@ function App() {
         <Outlet />
       </main>
       <Footer />
-      <ChatInterface />
     </div>
   );
 }

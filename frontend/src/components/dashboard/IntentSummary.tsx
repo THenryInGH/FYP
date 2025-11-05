@@ -1,78 +1,91 @@
-import { useEffect, useMemo, useState } from 'react';
-import { onosApi } from '../../utils/onosApi';
+import { useEffect, useState } from "react";
+import { onosApi } from "../../utils/onosApi";
 
 type Intent = {
-  id?: string;
-  appId?: string;
+  appId: string;
+  key: string;
   type?: string;
   state?: string;
   [k: string]: any;
 };
 
 export default function IntentSummary() {
-  const [intents, setIntents] = useState<Intent[] | null>(null);
+  const [intents, setIntents] = useState<Intent[]>([]);
+  const [deleting, setDeleting] = useState<string | null>(null);
+
+  const loadIntents = async () => {
+    const data = await onosApi.getIntents();
+    setIntents((data?.intents as Intent[]) ?? []);
+  };
 
   useEffect(() => {
-    let alive = true;
-    const load = async () => {
-      const data = await onosApi.getIntents();
-      if (!alive) return;
-      setIntents((data?.intents as Intent[]) ?? []);
-    };
-    load();
-    const t = setInterval(load, 5000);
-    return () => {
-      alive = false;
-      clearInterval(t);
-    };
+    loadIntents();
+    const interval = setInterval(loadIntents, 5000); // refresh every 5s
+    return () => clearInterval(interval);
   }, []);
 
-  const { byState, byType, total } = useMemo(() => {
-    const list = intents ?? [];
-    const byState = new Map<string, number>();
-    const byType = new Map<string, number>();
-    for (const it of list) {
-      const s = (it.state ?? 'UNKNOWN').toString();
-      const t = (it.type ?? 'UNKNOWN').toString().replace(/Intent$/, '');
-      byState.set(s, (byState.get(s) ?? 0) + 1);
-      byType.set(t, (byType.get(t) ?? 0) + 1);
+  const handleDelete = async (appId: string, key: string) => {
+    if (!confirm("Are you sure you want to delete this intent?")) return;
+    setDeleting(`${appId}:${key}`);
+    const success = await onosApi.deleteIntent(appId, key);
+    if (success) {
+      alert("Intent deleted successfully!");
+      await loadIntents();
+    } else {
+      alert("Failed to delete intent.");
     }
-    return { byState, byType, total: list.length };
-  }, [intents]);
-
-  if (intents === null) {
-    return <div className="bg-white dark:bg-gray-800 rounded-2xl p-4">Loading intents…</div>;
-  }
+    setDeleting(null);
+  };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200">
-        <h3 className="text-lg font-semibold mb-3">Intents by State</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {[...byState.entries()].map(([state, count]) => (
-            <div key={state} className="rounded-xl border p-3 text-center bg-gray-50 dark:bg-gray-700">
-              <div className="text-sm text-gray-500">{state}</div>
-              <div className="text-2xl font-bold">{count}</div>
-            </div>
-          ))}
-          <div className="rounded-xl border p-3 text-center bg-gray-50 dark:bg-gray-700">
-            <div className="text-sm text-gray-500">Total</div>
-            <div className="text-2xl font-bold text-blue-600">{total}</div>
-          </div>
-        </div>
-      </div>
+    <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 p-6 relative">
+      <h3 className="text-xl font-semibold text-gray-800 mb-4">
+        Installed Intents
+      </h3>
 
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200">
-        <h3 className="text-lg font-semibold mb-3">Intents by Type</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {[...byType.entries()].map(([type, count]) => (
-            <div key={type} className="rounded-xl border p-3 text-center bg-gray-50 dark:bg-gray-700">
-              <div className="text-sm text-gray-500">{type}</div>
-              <div className="text-2xl font-bold">{count}</div>
-            </div>
-          ))}
+      {intents.length === 0 ? (
+        <div className="text-gray-500">No intents found.</div>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full border-collapse">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-200">
+                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">App ID</th>
+                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Key</th>
+                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">Type</th>
+                <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">State</th>
+                <th className="px-4 py-2 text-right text-sm font-semibold text-gray-600">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {intents.map((intent) => (
+                <tr
+                  key={`${intent.appId}:${intent.key}`}
+                  className="border-b hover:bg-gray-50 transition-colors"
+                >
+                  <td className="px-4 py-2 text-gray-800">{intent.appId}</td>
+                  <td className="px-4 py-2 text-gray-800">{intent.key}</td>
+                  <td className="px-4 py-2 text-gray-800">{intent.type ?? "N/A"}</td>
+                  <td className="px-4 py-2 text-gray-800">{intent.state ?? "UNKNOWN"}</td>
+                  <td className="px-4 py-2 text-right">
+                    <button
+                      onClick={() => handleDelete(intent.appId, intent.key)}
+                      disabled={deleting === `${intent.appId}:${intent.key}`}
+                      className={`px-3 py-1.5 text-sm rounded-lg font-medium transition ${
+                        deleting === `${intent.appId}:${intent.key}`
+                          ? "bg-gray-300 text-gray-700 cursor-not-allowed"
+                          : "bg-red-500 text-white hover:bg-red-600 shadow-sm"
+                      }`}
+                    >
+                      {deleting === `${intent.appId}:${intent.key}` ? "Deleting..." : "Delete"}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      </div>
+      )}
     </div>
   );
 }

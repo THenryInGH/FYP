@@ -191,7 +191,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="edk9ptpJA0eeP_YgwQ1k-190" value="NODES" style="shape=table;startSize=25;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=1;fontStyle=1;align=center;resizeLast=1;" vertex="1" parent="1">
-          <mxGeometry x="980" y="1540" width="427" height="257" as="geometry" />
+          <mxGeometry x="980" y="1550" width="427" height="257" as="geometry" />
         </mxCell>
         <mxCell id="edk9ptpJA0eeP_YgwQ1k-191" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=0;" vertex="1" parent="edk9ptpJA0eeP_YgwQ1k-190">
           <mxGeometry y="25" width="427" height="46" as="geometry" />
@@ -426,7 +426,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="edk9ptpJA0eeP_YgwQ1k-243" value="vote" style="curved=1;startArrow=ERmandOne;startSize=10;;endArrow=ERzeroToMany;endSize=10;;exitX=1;exitY=0.71;entryX=0.5;entryY=0;rounded=0;" edge="1" parent="1" source="edk9ptpJA0eeP_YgwQ1k-123" target="edk9ptpJA0eeP_YgwQ1k-216">
+        <mxCell id="edk9ptpJA0eeP_YgwQ1k-243" value="owns" style="curved=1;startArrow=ERmandOne;startSize=10;;endArrow=ERzeroToMany;endSize=10;;exitX=1;exitY=0.71;entryX=0.5;entryY=0;rounded=0;" edge="1" parent="1" source="edk9ptpJA0eeP_YgwQ1k-123" target="edk9ptpJA0eeP_YgwQ1k-216">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="989" y="1858" />

@@ -6,28 +6,27 @@
 ## What it does
 - Natural-language intents to concrete SDN changes (QoS, routing, ACLs, bandwidth allocation).
 - Validates intents for safety and feasibility before execution.
-- Simulates/what-if previews and change logs for accountability.
 - Human-in-the-loop approval flows.
 - Extensible skills (functions/tools) for new SDN controllers and domains.
+
+## Scope
+1. Host-to-Host connectivity
+2. Bandwidth/QoS constraint on flows
+3. Multi-ingress/ multi-egress flows (load balancing)
+4. Blocking/ security flows (simple ACLs)
+5. Topology awareness and status retrieval
+### Future planning
+6. Dynamic rerouting based on congestion/failures (IMR)
+7. Automate documentation process 
+8. Agent install flow rules itself 
 
 Example intents:
 - “Throttle bulk backups after 1 a.m. to keep latency low for production.”
 - “Give the ‘VideoConf’ app higher priority on VLAN 20 until 6 p.m.”
 - “Block SSH to servers outside the bastion for interns group.”
 
-## How it uses OpenAI
-- LLM models: GPT-OSS-20B
-- Techniques:
-  - Function calling / tool use to invoke SDN controller APIs.
-  - Structured outputs (JSON) for deterministic policy objects.
-  - System prompts with policy/compliance guardrails.
-  - Retrieval-augmented context (topology, devices, historical changes)
-- Safety:
-  - Dry-run simulation and diff preview before apply.
-  - Role-based approvals for sensitive intents.
-  - Strict schema validation and bounded tool arguments.
 
-  ---
+
 
 ## Architecture
 <!--Architecture diagram here-->
@@ -36,11 +35,15 @@ Example intents:
 
 ---
 
-## Repository layout
+## Repository layout 
 ```
 FYP/
+├─ database/ 
+├─ diagram/
+├─ evaluation/
 ├─ frontend/
-
+├─ llm-engine/
+├─ onos-testbed/
 ```
 
 ---

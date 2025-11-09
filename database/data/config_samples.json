@@ -1,0 +1,149 @@
+[
+  {
+    "category": "Connectivity",
+    "intent_text": "Make sure h1 can communicate with h2.",
+    "config_json": {
+      "type": "HostToHostIntent",
+      "appId": "org.onosproject.cli",
+      "priority": 100,
+      "one": "CE:52:DD:E0:04:42/None",
+      "two": "4A:69:B2:E4:1F:44/None"
+    },
+    "metadata": {
+      "instruction": {
+        "purpose": "Create a single HostToHostIntent for connectivity between two hosts.",
+        "type": "Always 'HostToHostIntent'.",
+        "appId": "Use org.onosproject.cli for ONOS CLI app ID.",
+        "priority": "Default 100 unless user specifies otherwise.",
+        "one": "Use MAC address of source host (h1).",
+        "two": "Use MAC address of destination host (h2)."
+      }
+    }
+  },
+  {
+    "category": "Connectivity",
+    "intent_text": "Allow communication between h1 and h3.",
+    "config_json": {
+      "type": "HostToHostIntent",
+      "appId": "org.onosproject.cli",
+      "priority": 100,
+      "one": "CE:52:DD:E0:04:42/None",
+      "two": "46:8D:D5:AE:0A:52/None"
+    },
+    "metadata": {
+      "instruction": {
+        "purpose": "Allow direct communication between h1 and h3.",
+        "type": "Use HostToHostIntent.",
+        "appId": "ONOS application ID.",
+        "priority": "Set to 100 unless user asks for higher priority.",
+        "one": "MAC of h1.",
+        "two": "MAC of h3."
+      }
+    }
+  },
+  {
+    "category": "Connectivity",
+    "intent_text": "Connect h2 and h4 for data transfer.",
+    "config_json": {
+      "type": "HostToHostIntent",
+      "appId": "org.onosproject.cli",
+      "priority": 100,
+      "one": "4A:69:B2:E4:1F:44/None",
+      "two": "3E:66:C7:84:64:2E/None"
+    },
+    "metadata": {
+      "instruction": {
+        "purpose": "Connect h2↔h4 with standard ONOS intent.",
+        "type": "HostToHostIntent.",
+        "appId": "Use default ONOS CLI appId.",
+        "priority": "Set to 100.",
+        "one": "MAC of h2.",
+        "two": "MAC of h4."
+      }
+    }
+  },
+  {
+    "category": "Connectivity",
+    "intent_text": "Allow all hosts to communicate with each other.",
+    "config_json": [
+      {
+        "type": "HostToHostIntent",
+        "appId": "org.onosproject.cli",
+        "priority": 100,
+        "one": "CE:52:DD:E0:04:42/None",
+        "two": "4A:69:B2:E4:1F:44/None"
+      },
+      {
+        "type": "HostToHostIntent",
+        "appId": "org.onosproject.cli",
+        "priority": 100,
+        "one": "CE:52:DD:E0:04:42/None",
+        "two": "46:8D:D5:AE:0A:52/None"
+      },
+      {
+        "type": "HostToHostIntent",
+        "appId": "org.onosproject.cli",
+        "priority": 100,
+        "one": "CE:52:DD:E0:04:42/None",
+        "two": "3E:66:C7:84:64:2E/None"
+      },
+      {
+        "type": "HostToHostIntent",
+        "appId": "org.onosproject.cli",
+        "priority": 100,
+        "one": "4A:69:B2:E4:1F:44/None",
+        "two": "46:8D:D5:AE:0A:52/None"
+      },
+      {
+        "type": "HostToHostIntent",
+        "appId": "org.onosproject.cli",
+        "priority": 100,
+        "one": "4A:69:B2:E4:1F:44/None",
+        "two": "3E:66:C7:84:64:2E/None"
+      },
+      {
+        "type": "HostToHostIntent",
+        "appId": "org.onosproject.cli",
+        "priority": 100,
+        "one": "46:8D:D5:AE:0A:52/None",
+        "two": "3E:66:C7:84:64:2E/None"
+      }
+    ],
+    "metadata": {
+      "instruction": {
+        "purpose": "Allow full-mesh connectivity among all hosts.",
+        "type": "Batch of HostToHostIntent objects.",
+        "pairs": "Each object connects one host pair.",
+        "priority": "Use 100 for all intents."
+      }
+    }
+  },
+  {
+    "category": "Connectivity",
+    "intent_text": "Block communication between h1 and h3.",
+    "config_json": {
+      "type": "FlowObjective",
+      "appId": "org.onosproject.cli",
+      "deviceId": "of:00009e30122c8e4a",
+      "priority": 600,
+      "selector": {
+        "criteria": [
+          { "type": "EthType", "ethType": "0x0800" },
+          { "type": "IPSrc", "ip": "10.0.0.1/32" },
+          { "type": "IPDst", "ip": "10.0.0.3/32" }
+        ]
+      },
+      "treatment": { "instructions": [] },
+      "operation": "REMOVE"
+    },
+    "metadata": {
+      "instruction": {
+        "purpose": "Deny communication between h1 and h3.",
+        "type": "FlowObjective used for blocking flows.",
+        "selector": "Match IP or MAC of both hosts.",
+        "treatment": "Empty = drop packets.",
+        "priority": "Use higher priority (>=600)."
+      }
+    }
+  }
+]

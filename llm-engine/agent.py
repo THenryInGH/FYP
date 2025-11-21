@@ -9,8 +9,7 @@ app = FastAPI(title="FYP Agent API")
 # Allow your frontend device IP/domain
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # or replace * with your frontend IP if you want stricter
-    allow_credentials=True,
+    allow_origins=["*"],  
     allow_methods=["*"],
     allow_headers=["*"],
 )

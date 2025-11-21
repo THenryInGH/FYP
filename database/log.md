@@ -83,3 +83,5 @@ ALTER ROLE fyp_admin SET search_path TO public;
         - sending SQL queries
         - receiving results
         - transactions
+
+# 6. data preparation

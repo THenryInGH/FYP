@@ -28,7 +28,9 @@ async function post(endpoint: string, body: any) {
       body: JSON.stringify(body),
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
+
+    const text = await res.text();
+    return text ? JSON.parse(text) : { status: res.status };
   } catch (err) {
     console.error("ONOS POST error:", err);
     return null;

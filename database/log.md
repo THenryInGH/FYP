@@ -85,3 +85,5 @@ ALTER ROLE fyp_admin SET search_path TO public;
         - transactions
 
 # 6. data preparation
+
+# 7. data insert

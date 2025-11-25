@@ -1,0 +1,87 @@
+[
+    {
+      "device_id": "of:00004ac6dbb4ea4c",
+      "name": "s1",
+      "type": "switch",
+      "annotations": {
+        "channelId": "127.0.0.1:40206",
+        "managementAddress": "127.0.0.1"
+      },
+      "extra_metadata": {
+      }
+    },
+    {
+      "device_id": "of:00009ebb045c9a40",
+      "name": "s2",
+      "type": "switch",
+      "annotations": {
+        "channelId": "127.0.0.1:40192",
+        "managementAddress": "127.0.0.1"
+      },
+      "extra_metadata": {
+      }
+    },
+    {
+      "device_id": "of:00000e3c94424f45",
+      "name": "s3",
+      "type": "switch",
+      "annotations": {
+        "channelId": "127.0.0.1:40220",
+        "managementAddress": "127.0.0.1"
+      },
+      "extra_metadata": {
+      }
+    },
+    {
+      "device_id": "of:00008e28ab42594d",
+      "name": "s4",
+      "type": "switch",
+      "annotations": {
+        "channelId": "127.0.0.1:40246",
+        "managementAddress": "127.0.0.1"
+      },
+      "extra_metadata": {
+      }
+    },
+    {
+      "device_id": "4A:69:B2:E4:1F:44/None",
+      "name": "h2",
+      "type": "host",
+      "annotations": {
+        "ipAddresses": ["10.0.0.2/24"]
+      },
+      "extra_metadata": {
+      }
+    },
+    {
+      "device_id": "CE:52:DD:E0:04:42/None",
+      "name": "h1",
+      "type": "host",
+      "annotations": {
+        "ipAddresses": ["10.0.0.1/24"]
+      },
+      "extra_metadata": {
+      }
+    },
+    {
+      "device_id": "46:8D:D5:AE:0A:52/None",
+      "name": "h3",
+      "type": "host",
+      "annotations": {
+        "ipAddresses": ["10.0.0.3/24"]
+      },
+      "extra_metadata": {
+      }
+    },
+    {
+      "device_id": "3E:66:C7:84:64:2E/None",
+      "name": "h4",
+      "type": "host",
+      "annotations": {
+        "ipAddresses": ["10.0.0.4/24"]
+      },
+      "extra_metadata": {
+      }
+    }
+]
+  

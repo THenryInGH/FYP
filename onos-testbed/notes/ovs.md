@@ -67,6 +67,8 @@ sudo ovs-ofctl dump-flows br0
 
 # Add a new flow (match + action)
 sudo ovs-ofctl add-flow br0 "in_port=1,ip,nw_dst=10.0.0.2,actions=output:2"
+sudo ovs-ofctl add-flow s1 "priority=XXX,<match fields>,actions=<actions>"
+
 
 # Delete flows (e.g. all flows)
 sudo ovs-ofctl del-flows br0

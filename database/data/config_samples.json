@@ -1,5 +1,6 @@
 [
   {
+    "sample_id": "1",
     "category": "Connectivity",
     "intent_text": "Make sure h1 can communicate with h2.",
     "config_json": {
@@ -9,7 +10,7 @@
       "one": "CE:52:DD:E0:04:42/None",
       "two": "4A:69:B2:E4:1F:44/None"
     },
-    "metadata": {
+    "extra_metadata": {
       "instruction": {
         "purpose": "Create a single HostToHostIntent for connectivity between two hosts.",
         "type": "Always 'HostToHostIntent'.",
@@ -21,6 +22,7 @@
     }
   },
   {
+    "sample_id": "2",
     "category": "Connectivity",
     "intent_text": "Allow communication between h1 and h3.",
     "config_json": {
@@ -30,7 +32,7 @@
       "one": "CE:52:DD:E0:04:42/None",
       "two": "46:8D:D5:AE:0A:52/None"
     },
-    "metadata": {
+    "extra_metadata": {
       "instruction": {
         "purpose": "Allow direct communication between h1 and h3.",
         "type": "Use HostToHostIntent.",
@@ -42,6 +44,7 @@
     }
   },
   {
+    "sample_id": "3",
     "category": "Connectivity",
     "intent_text": "Connect h2 and h4 for data transfer.",
     "config_json": {
@@ -51,7 +54,7 @@
       "one": "4A:69:B2:E4:1F:44/None",
       "two": "3E:66:C7:84:64:2E/None"
     },
-    "metadata": {
+    "extra_metadata": {
       "instruction": {
         "purpose": "Connect h2↔h4 with standard ONOS intent.",
         "type": "HostToHostIntent.",
@@ -63,6 +66,7 @@
     }
   },
   {
+    "sample_id": "4",
     "category": "Connectivity",
     "intent_text": "Allow all hosts to communicate with each other.",
     "config_json": [
@@ -109,7 +113,7 @@
         "two": "3E:66:C7:84:64:2E/None"
       }
     ],
-    "metadata": {
+    "extra_metadata": {
       "instruction": {
         "purpose": "Allow full-mesh connectivity among all hosts.",
         "type": "Batch of HostToHostIntent objects.",
@@ -119,6 +123,7 @@
     }
   },
   {
+    "sample_id": "5",
     "category": "Connectivity",
     "intent_text": "Block communication between h1 and h3.",
     "config_json": {
@@ -136,7 +141,7 @@
       "treatment": { "instructions": [] },
       "operation": "REMOVE"
     },
-    "metadata": {
+    "extra_metadata": {
       "instruction": {
         "purpose": "Deny communication between h1 and h3.",
         "type": "FlowObjective used for blocking flows.",

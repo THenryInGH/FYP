@@ -27,4 +27,9 @@ curl -X POST "http://10.100.10.15:5000/generate" \
      -H "Content-Type: application/json" \
      -d '{"prompt": "Make sure 10.0.0.1 can communicate 10.0.0.2"}'
 
+# when llm is running on same host
+curl -X POST "http://localhost:5000/generate" \
+     -H "Content-Type: application/json" \
+     -d '{"prompt": "Make sure 10.0.0.1 can communicate 10.0.0.2"}'
+
 ```

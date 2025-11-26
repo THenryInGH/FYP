@@ -84,6 +84,15 @@ ALTER ROLE fyp_admin SET search_path TO public;
         - receiving results
         - transactions
 
-# 6. data preparation
+# 6. Data preparation
+1. Host-to-Host connectivity 
 
-# 7. data insert
+2. Bandwidth/QoS constraint on flows
+
+3. Multi-ingress/ multi-egress flows (load balancing)
+
+4. Blocking/ security flows (simple ACLs)
+
+# 7. Data insert
+
+# 8. Database integration

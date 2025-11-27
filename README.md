@@ -20,11 +20,20 @@
 | **Lack of Integrated Monitoring**     | Integrate real-time network monitoring that visualises topology state, link utilisation, and flow status with **data refresh intervals ≤ 3 seconds**, enabling administrators to verify intent enforcement live by final deployment phase.                                             |
 
 ## Scope
-1. Host-to-Host connectivity
-2. Bandwidth/QoS constraint on flows
+1. Host-to-Host connectivity：   
+    - HostToHost Intent 
+
+
+2. Bandwidth/QoS constraint on flows:
+    - HostToHost Intent with specific traffic types selector and priority
+
 3. Multi-ingress/ multi-egress flows (load balancing)
+    - HostToHost Intent 
 4. Blocking/ security flows (simple ACLs)
+    - FlowObjective intent with selector and treatment
+
 5. Topology awareness and status retrieval
+    - A respontive UI developed using React
 
 ### Future planning
 6. Dynamic rerouting based on congestion/failures (IMR)
@@ -74,6 +83,7 @@ FYP/
 ## Tech stack
 - SDN Testbed
   - ONOS Controller
+  - ONOS Intent Framework
   - Linux namespaces
   - OpenVSwitch
 - Frontend

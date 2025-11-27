@@ -39,5 +39,8 @@
 - iperf also
 
 ## Obj 4: Respontive dashboard
-- Refresh time: 5 seconds
+- Dashboard showing the topology, network statistic and intent configuration
+- Dashboard refresh every 5 seconds
+- Users can give feedback on the response whether it is possitive or negative.
 - Response with possive feedback from users will be submitted to config_sample database.
+- Users can revert back the configuration done.

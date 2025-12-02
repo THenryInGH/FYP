@@ -13,9 +13,12 @@ llm-engine/models/*
 
 # Ignore Python cache files
 llm-engine/__pycache__/
+database/__pycache__/
+database/rag/__pycache__/
 
 # environment variables file
 .env
 
 # IDE configuration
 .vscode/*
+

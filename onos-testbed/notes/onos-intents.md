@@ -1,9 +1,12 @@
-## Differences between HostToHostIntent vs FlowObjectiveIntent/FlowIntent
-| Feature                  | **HostToHostIntent**                                                         | **FlowObjective / FlowIntent**                                                                       |
-| ------------------------ | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| **Purpose**              | Connects two hosts (endpoints) across the network. Higher-level abstraction. | Lower-level, per-switch flow rules abstraction; allows more detailed control over matches & actions. |
-| **Scope**                | Path computed by ONOS automatically; spans multiple switches                 | Targeted flow rules per device; more granular per-switch control                                     |
-| **Selector / Treatment** | Yes, you can match IP, TCP/UDP, ports, etc.; treatment is optional           | Yes, full match/action control (like OpenFlow). Can include `set_queue`, `meter`, `output`, etc.     |
-| **Priority handling**    | Yes, at the intent level                                                     | Yes, at the flow rule level (more fine-grained)                                                      |
-| **Abstraction level**    | High — suitable for host-to-host connectivity or intent-based apps           | Low — closer to the actual OpenFlow rules; more flexible, closer to SDN hardware features            |
-| **Use case**             | “I want host A ↔ host B to communicate”                                      | “I want this flow with selector X and treatment Y installed on these switches”                       |
+# ONOS Intent Framework
+[reference](https://wiki.onosproject.org/display/ONOS13/Intent+Framework#IntentFramework-Intents)                  
+## Benefits compared to manual flows add
+1. Adapt to topology changes (future growth, modification, link failure)
+2. Complexity abstraction (Hide complex configurations by using intents)
+3. Conflict Resolution
+
+**No built-in global optimization for intent framework therefore, may end up with overlapping paths, uneven link load, suboptimal global resource usage with many intents**
+
+
+That's why [**IMR** ](/onos-testbed/notes/imr.md) comes in.
+

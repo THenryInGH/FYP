@@ -20,16 +20,19 @@
 | **Lack of Integrated Monitoring**     | Integrate real-time network monitoring that visualises topology state, link utilisation, and flow status with **data refresh intervals ≤ 3 seconds**, enabling administrators to verify intent enforcement live by final deployment phase.                                             |
 
 ## Scope
-1. Host-to-Host connectivity：   
+1. Connectivity：   
     - HostToHost Intent 
 
 
-2. Bandwidth/QoS constraint on flows:
+2. QoS control:
     - HostToHost Intent with specific traffic types selector and priority
+    - Plan to further extend onos intent framework that allows OpenFLow meter injection
 
-3. Multi-ingress/ multi-egress flows (load balancing)
-    - HostToHost Intent 
-4. Blocking/ security flows (simple ACLs)
+3. Load-balancing
+    - HostToHost Intent with specific traffic types selector and path
+    - Plan to develop a load balancer to be extended in onos intent framework
+
+4. Access control
     - FlowObjective intent with selector and treatment
 
 5. Topology awareness and status retrieval
@@ -38,7 +41,8 @@
 ### Future planning
 6. Dynamic rerouting based on congestion/failures (IMR)
 7. Automate documentation process 
-8. Agent install flow rules itself 
+8. Agent install flow rules itself
+9. Seek for a next version of FYP, escape from the limitation of intent framework 
 
 Example intents:
 - “Throttle bulk backups after 1 a.m. to keep latency low for production.”

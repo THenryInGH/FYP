@@ -1,0 +1,345 @@
+[
+    {
+        "intent_text": "Ensure h1 can reach h2 for troubleshooting runs.",
+        "config_json": {
+            "type": "HostToHostIntent",
+            "appId": "org.onosproject.cli",
+            "priority": 120,
+            "one": "CE:52:DD:E0:04:42/None",
+            "two": "4A:69:B2:E4:1F:44/None"
+        }
+    },
+    {
+        "intent_text": "Permit monitoring probes from h1 to h3.",
+        "config_json": {
+            "type": "HostToHostIntent",
+            "appId": "org.onosproject.cli",
+            "priority": 90,
+            "one": "CE:52:DD:E0:04:42/None",
+            "two": "46:8D:D5:AE:0A:52/None",
+            "selector": {
+                "criteria": [
+                    { "type": "EthType", "ethType": "0x0800" }
+                ]
+            }
+        }
+    },
+    {
+        "intent_text": "Enable h2 to sync data with h4.",
+        "config_json": {
+            "type": "HostToHostIntent",
+            "appId": "org.onosproject.cli",
+            "priority": 130,
+            "one": "4A:69:B2:E4:1F:44/None",
+            "two": "3E:66:C7:84:64:2E/None",
+            "selector": {
+                "criteria": [
+                    { "type": "IPSrc", "ip": "10.0.0.2/32" },
+                    { "type": "IPDst", "ip": "10.0.0.4/32" }
+                ]
+            }
+        }
+    },
+    {
+        "intent_text": "Set up redundant intents so every host can reach every other host.",
+        "config_json": [
+            {
+                "type": "HostToHostIntent",
+                "appId": "org.onosproject.cli",
+                "priority": 110,
+                "one": "CE:52:DD:E0:04:42/None",
+                "two": "4A:69:B2:E4:1F:44/None"
+            },
+            {
+                "type": "HostToHostIntent",
+                "appId": "org.onosproject.cli",
+                "priority": 110,
+                "one": "CE:52:DD:E0:04:42/None",
+                "two": "46:8D:D5:AE:0A:52/None"
+            },
+            {
+                "type": "HostToHostIntent",
+                "appId": "org.onosproject.cli",
+                "priority": 110,
+                "one": "CE:52:DD:E0:04:42/None",
+                "two": "3E:66:C7:84:64:2E/None"
+            },
+            {
+                "type": "HostToHostIntent",
+                "appId": "org.onosproject.cli",
+                "priority": 105,
+                "one": "4A:69:B2:E4:1F:44/None",
+                "two": "46:8D:D5:AE:0A:52/None"
+            },
+            {
+                "type": "HostToHostIntent",
+                "appId": "org.onosproject.cli",
+                "priority": 105,
+                "one": "4A:69:B2:E4:1F:44/None",
+                "two": "3E:66:C7:84:64:2E/None"
+            },
+            {
+                "type": "HostToHostIntent",
+                "appId": "org.onosproject.cli",
+                "priority": 105,
+                "one": "46:8D:D5:AE:0A:52/None",
+                "two": "3E:66:C7:84:64:2E/None"
+            }
+        ]
+    },
+    {
+        "intent_text": "Guarantee nightly log uploads from h3 to h2 complete without interruption.",
+        "config_json": {
+            "type": "HostToHostIntent",
+            "appId": "org.onosproject.cli",
+            "priority": 135,
+            "one": "46:8D:D5:AE:0A:52/None",
+            "two": "4A:69:B2:E4:1F:44/None"
+        }
+    },
+    {
+        "intent_text": "Favor RTP video between h1 and h2.",
+        "config_json": {
+            "type": "HostToHostIntent",
+            "appId": "org.onosproject.cli",
+            "priority": 420,
+            "one": "CE:52:DD:E0:04:42/None",
+            "two": "4A:69:B2:E4:1F:44/None",
+            "selector": {
+                "criteria": [
+                    { "type": "IP_PROTO", "protocol": "UDP" },
+                    { "type": "UDP_DST", "port": "16384" }
+                ]
+            }
+        }
+    },
+    {
+        "intent_text": "Prioritize VoIP control packets from h2 to h3 on port 5061.",
+        "config_json": {
+            "type": "HostToHostIntent",
+            "appId": "org.onosproject.cli",
+            "priority": 460,
+            "one": "4A:69:B2:E4:1F:44/None",
+            "two": "46:8D:D5:AE:0A:52/None",
+            "selector": {
+                "criteria": [
+                    { "type": "IP_PROTO", "protocol": "UDP" },
+                    { "type": "UDP_SRC", "port": "5061" }
+                ]
+            }
+        }
+    },
+    {
+        "intent_text": "Deprioritize FTP transfers from h3 to h4.",
+        "config_json": {
+            "type": "HostToHostIntent",
+            "appId": "org.onosproject.cli",
+            "priority": 60,
+            "one": "46:8D:D5:AE:0A:52/None",
+            "two": "3E:66:C7:84:64:2E/None",
+            "selector": {
+                "criteria": [
+                    { "type": "IP_PROTO", "protocol": "TCP" },
+                    { "type": "TCP_SRC", "port": "20-21" }
+                ]
+            }
+        }
+    },
+    {
+        "intent_text": "Accelerate HTTPS sessions from h1 to h3 during office hours.",
+        "config_json": {
+            "type": "HostToHostIntent",
+            "appId": "org.onosproject.cli",
+            "priority": 390,
+            "one": "CE:52:DD:E0:04:42/None",
+            "two": "46:8D:D5:AE:0A:52/None",
+            "selector": {
+                "criteria": [
+                    { "type": "IP_PROTO", "protocol": "TCP" },
+                    { "type": "TCP_DST", "port": "443" }
+                ]
+            }
+        }
+    },
+    {
+        "intent_text": "Ensure DNS queries from h2 to h1 are serviced quickly.",
+        "config_json": {
+            "type": "HostToHostIntent",
+            "appId": "org.onosproject.cli",
+            "priority": 350,
+            "one": "4A:69:B2:E4:1F:44/None",
+            "two": "CE:52:DD:E0:04:42/None",
+            "selector": {
+                "criteria": [
+                    { "type": "IP_PROTO", "protocol": "UDP" },
+                    { "type": "UDP_DST", "port": "53" }
+                ]
+            }
+        }
+    },
+    {
+        "intent_text": "Keep low-priority diagnostics available between h4 and h1.",
+        "config_json": {
+            "type": "HostToHostIntent",
+            "appId": "org.onosproject.cli",
+            "priority": 70,
+            "one": "3E:66:C7:84:64:2E/None",
+            "two": "CE:52:DD:E0:04:42/None"
+        }
+    },
+    {
+        "intent_text": "Keep critical config pushes from h1 to h4 at elevated priority.",
+        "config_json": {
+            "type": "HostToHostIntent",
+            "appId": "org.onosproject.cli",
+            "priority": 180,
+            "one": "CE:52:DD:E0:04:42/None",
+            "two": "3E:66:C7:84:64:2E/None"
+        }
+    },
+    {
+        "intent_text": "Allow IPv4-only telemetry from h3 back to h2.",
+        "config_json": {
+            "type": "HostToHostIntent",
+            "appId": "org.onosproject.cli",
+            "priority": 115,
+            "one": "46:8D:D5:AE:0A:52/None",
+            "two": "4A:69:B2:E4:1F:44/None",
+            "selector": {
+                "criteria": [
+                    { "type": "EthType", "ethType": "0x0800" }
+                ]
+            }
+        }
+    },
+    {
+        "intent_text": "Prioritize SIP media streams from h2 to h4.",
+        "config_json": {
+            "type": "HostToHostIntent",
+            "appId": "org.onosproject.cli",
+            "priority": 430,
+            "one": "4A:69:B2:E4:1F:44/None",
+            "two": "3E:66:C7:84:64:2E/None",
+            "selector": {
+                "criteria": [
+                    { "type": "IP_PROTO", "protocol": "UDP" },
+                    { "type": "UDP_DST", "port": "4000" }
+                ]
+            }
+        }
+    },
+    {
+        "intent_text": "Keep analytics syncs from h4 to h3 best effort.",
+        "config_json": {
+            "type": "HostToHostIntent",
+            "appId": "org.onosproject.cli",
+            "priority": 65,
+            "one": "3E:66:C7:84:64:2E/None",
+            "two": "46:8D:D5:AE:0A:52/None",
+            "selector": {
+                "criteria": [
+                    { "type": "IP_PROTO", "protocol": "TCP" }
+                ]
+            }
+        }
+    },
+    {
+        "intent_text": "Expedite syslog events from h2 to h1.",
+        "config_json": {
+            "type": "HostToHostIntent",
+            "appId": "org.onosproject.cli",
+            "priority": 340,
+            "one": "4A:69:B2:E4:1F:44/None",
+            "two": "CE:52:DD:E0:04:42/None",
+            "selector": {
+                "criteria": [
+                    { "type": "IP_PROTO", "protocol": "UDP" },
+                    { "type": "UDP_DST", "port": "514" }
+                ]
+            }
+        }
+    },
+    {
+        "intent_text": "Boost database replication from h3 to h4.",
+        "config_json": {
+            "type": "HostToHostIntent",
+            "appId": "org.onosproject.cli",
+            "priority": 370,
+            "one": "46:8D:D5:AE:0A:52/None",
+            "two": "3E:66:C7:84:64:2E/None",
+            "selector": {
+                "criteria": [
+                    { "type": "IP_PROTO", "protocol": "TCP" },
+                    { "type": "TCP_DST", "port": "5432" }
+                ]
+            }
+        }
+    },
+    {
+        "intent_text": "Set up maintenance intents from h1 to both h2 and h3.",
+        "config_json": [
+            {
+                "type": "HostToHostIntent",
+                "appId": "org.onosproject.cli",
+                "priority": 95,
+                "one": "CE:52:DD:E0:04:42/None",
+                "two": "4A:69:B2:E4:1F:44/None"
+            },
+            {
+                "type": "HostToHostIntent",
+                "appId": "org.onosproject.cli",
+                "priority": 95,
+                "one": "CE:52:DD:E0:04:42/None",
+                "two": "46:8D:D5:AE:0A:52/None"
+            }
+        ]
+    },
+    {
+        "intent_text": "Give VoIP media packets from h3 to h2 higher priority.",
+        "config_json": {
+            "type": "HostToHostIntent",
+            "appId": "org.onosproject.cli",
+            "priority": 440,
+            "one": "46:8D:D5:AE:0A:52/None",
+            "two": "4A:69:B2:E4:1F:44/None",
+            "selector": {
+                "criteria": [
+                    { "type": "IP_PROTO", "protocol": "UDP" },
+                    { "type": "UDP_DST", "port": "10000" }
+                ]
+            }
+        }
+    },
+    {
+        "intent_text": "Ensure patch downloads from h4 to h2 finish quickly.",
+        "config_json": {
+            "type": "HostToHostIntent",
+            "appId": "org.onosproject.cli",
+            "priority": 155,
+            "one": "3E:66:C7:84:64:2E/None",
+            "two": "4A:69:B2:E4:1F:44/None",
+            "selector": {
+                "criteria": [
+                    { "type": "IP_PROTO", "protocol": "TCP" },
+                    { "type": "TCP_DST", "port": "8080" }
+                ]
+            }
+        }
+    },
+    {
+        "intent_text": "Guarantee nightly database dumps from h2 to h1.",
+        "config_json": {
+            "type": "HostToHostIntent",
+            "appId": "org.onosproject.cli",
+            "priority": 200,
+            "one": "4A:69:B2:E4:1F:44/None",
+            "two": "CE:52:DD:E0:04:42/None",
+            "selector": {
+                "criteria": [
+                    { "type": "IP_PROTO", "protocol": "TCP" },
+                    { "type": "TCP_DST", "port": "3306" }
+                ]
+            }
+        }
+    }
+]

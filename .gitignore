@@ -16,3 +16,6 @@ llm-engine/__pycache__/
 
 # environment variables file
 .env
+
+# IDE configuration
+.vscode/*

@@ -68,57 +68,19 @@
   {
     "sample_id": "4",
     "category": "Connectivity",
-    "intent_text": "Allow all hosts to communicate with each other.",
+    "intent_text": "Ensure all hosts can communicate with each other.",
     "config_json": [
-      {
-        "type": "HostToHostIntent",
-        "appId": "org.onosproject.cli",
-        "priority": 100,
-        "one": "CE:52:DD:E0:04:42/None",
-        "two": "4A:69:B2:E4:1F:44/None"
-      },
-      {
-        "type": "HostToHostIntent",
-        "appId": "org.onosproject.cli",
-        "priority": 100,
-        "one": "CE:52:DD:E0:04:42/None",
-        "two": "46:8D:D5:AE:0A:52/None"
-      },
-      {
-        "type": "HostToHostIntent",
-        "appId": "org.onosproject.cli",
-        "priority": 100,
-        "one": "CE:52:DD:E0:04:42/None",
-        "two": "3E:66:C7:84:64:2E/None"
-      },
-      {
-        "type": "HostToHostIntent",
-        "appId": "org.onosproject.cli",
-        "priority": 100,
-        "one": "4A:69:B2:E4:1F:44/None",
-        "two": "46:8D:D5:AE:0A:52/None"
-      },
-      {
-        "type": "HostToHostIntent",
-        "appId": "org.onosproject.cli",
-        "priority": 100,
-        "one": "4A:69:B2:E4:1F:44/None",
-        "two": "3E:66:C7:84:64:2E/None"
-      },
-      {
-        "type": "HostToHostIntent",
-        "appId": "org.onosproject.cli",
-        "priority": 100,
-        "one": "46:8D:D5:AE:0A:52/None",
-        "two": "3E:66:C7:84:64:2E/None"
-      }
+      { "one": "CE:52:DD:E0:04:42/None", "two": "4A:69:B2:E4:1F:44/None", "type":"HostToHostIntent","priority":100,"appId":"org.onosproject.cli" },
+      { "one": "CE:52:DD:E0:04:42/None", "two": "46:8D:D5:AE:0A:52/None", "type":"HostToHostIntent","priority":100,"appId":"org.onosproject.cli" },
+      { "one": "CE:52:DD:E0:04:42/None", "two": "3E:66:C7:84:64:2E/None", "type":"HostToHostIntent","priority":100,"appId":"org.onosproject.cli" },
+      { "one": "4A:69:B2:E4:1F:44/None", "two": "46:8D:D5:AE:0A:52/None", "type":"HostToHostIntent","priority":100,"appId":"org.onosproject.cli" },
+      { "one": "4A:69:B2:E4:1F:44/None", "two": "3E:66:C7:84:64:2E/None", "type":"HostToHostIntent","priority":100,"appId":"org.onosproject.cli" },
+      { "one": "46:8D:D5:AE:0A:52/None", "two": "3E:66:C7:84:64:2E/None", "type":"HostToHostIntent","priority":100,"appId":"org.onosproject.cli" }
     ],
     "extra_metadata": {
       "instruction": {
-        "purpose": "Allow full-mesh connectivity among all hosts.",
-        "type": "Batch of HostToHostIntent objects.",
-        "pairs": "Each object connects one host pair.",
-        "priority": "Use 100 for all intents."
+        "purpose": "Ensure all hosts can communicate with each other.",
+        "generation_method": "Generate combinations of N hosts → choose(2)."
       }
     }
   },
@@ -150,5 +112,193 @@
         "priority": "Use higher priority (>=600)."
       }
     }
+  },
+  {
+    "sample_id": "6",
+    "category": "QoS Control",
+    "intent_text": "Prioritize video streaming traffic between h1 and h2.",
+    "config_json": {
+      "type": "HostToHostIntent",
+      "appId": "org.onosproject.cli",
+      "priority": 400,
+      "one": "CE:52:DD:E0:04:42/None",
+      "two": "4A:69:B2:E4:1F:44/None",
+      "selector": {
+        "criteria": [
+          { "type": "IP_PROTO", "protocol": "UDP" },
+          { "type": "UDP_DST", "udpPort": "5004" }
+        ]
+      }
+    },
+    "extra_metadata": {
+      "instruction": {
+        "purpose": "Apply QoS only to video traffic.",
+        "selector": "UDP + typical video RTP port 5004.",
+        "priority": "Higher priority → more resources."
+      }
+    }
+  },
+  {
+    "sample_id": "7",
+    "category": "QoS Control",
+    "intent_text": "Give VoIP traffic from h2 to h3 higher priority than normal data.",
+    "config_json": {
+      "type": "HostToHostIntent",
+      "appId": "org.onosproject.cli",
+      "priority": 450,
+      "one": "4A:69:B2:E4:1F:44/None",
+      "two": "46:8D:D5:AE:0A:52/None",
+      "selector": {
+        "criteria": [
+          { "type": "IP_PROTO", "protocol": "UDP" },
+          { "type": "UDP_SRC", "udpPort": "5060" }
+        ]
+      }
+    },
+    "extra_metadata": {
+      "instruction": {
+        "purpose": "SIP/VoIP control traffic QoS.",
+        "selector": "Match protocol + VoIP signalling port.",
+        "priority": "450 = treated above normal data 100."
+      }
+    }
+  },
+  {
+    "sample_id": "8",
+    "category": "QoS Control",
+    "intent_text": "Limit bulk file transfer and assign lower priority for traffic between h3 and h4.",
+    "config_json": {
+      "type": "HostToHostIntent",
+      "appId": "org.onosproject.cli",
+      "priority": 50,
+      "one": "46:8D:D5:AE:0A:52/None",
+      "two": "3E:66:C7:84:64:2E/None",
+      "selector": {
+        "criteria": [
+          { "type": "IP_PROTO", "protocol": "TCP" },
+          { "type": "TCP_DST", "tcpPort": "20-21" }
+        ]
+      }
+    },
+    "extra_metadata": {
+      "instruction": {
+        "purpose": "Deprioritize FTP bulk transfer.",
+        "selector": "TCP port 20–21.",
+        "priority": "Lower (=50) → loses arbitration against higher intents."
+      }
+    }
+  },
+  {
+    "sample_id": "9",
+    "category": "Connectivity",
+    "intent_text": "Provide a high-priority path from h1 to h4 for backup replication.",
+    "config_json": {
+      "type": "HostToHostIntent",
+      "appId": "org.onosproject.cli",
+      "priority": 140,
+      "one": "CE:52:DD:E0:04:42/None",
+      "two": "3E:66:C7:84:64:2E/None"
+    },
+    "extra_metadata": {
+      "instruction": {
+        "purpose": "Guarantee h1→h4 connectivity with elevated priority.",
+        "priority": "Use >100 so the backup traffic preempts default flows.",
+        "hosts": "Always reference MACs of h1 and h4."
+      }
+    }
+  },
+  {
+    "sample_id": "10",
+    "category": "Connectivity",
+    "intent_text": "Allow telemetry reports from h2 to reach h3 while matching IPv4 traffic.",
+    "config_json": {
+      "type": "HostToHostIntent",
+      "appId": "org.onosproject.cli",
+      "priority": 110,
+      "one": "4A:69:B2:E4:1F:44/None",
+      "two": "46:8D:D5:AE:0A:52/None",
+      "selector": {
+        "criteria": [
+          { "type": "EthType", "ethType": "0x0800" }
+        ]
+      }
+    },
+    "extra_metadata": {
+      "instruction": {
+        "purpose": "Connectivity intent scoped to IPv4 telemetry packets.",
+        "selector": "EtherType 0x0800 ensures IPv4 only.",
+        "hosts": "MACs correspond to h2 (source) and h3 (destination)."
+      }
+    }
+  },
+  {
+    "sample_id": "11",
+    "category": "QoS Control",
+    "intent_text": "Boost priority for HTTP traffic from h3 to h1.",
+    "config_json": {
+      "type": "HostToHostIntent",
+      "appId": "org.onosproject.cli",
+      "priority": 380,
+      "one": "46:8D:D5:AE:0A:52/None",
+      "two": "CE:52:DD:E0:04:42/None",
+      "selector": {
+        "criteria": [
+          { "type": "IP_PROTO", "protocol": "TCP" },
+          { "type": "TCP_DST", "port": "80" }
+        ]
+      }
+    },
+    "extra_metadata": {
+      "instruction": {
+        "purpose": "Prioritize web requests h3→h1.",
+        "selector": "Match TCP dst port 80.",
+        "priority": "Set >300 so web gets expedited handling."
+      }
+    }
+  },
+  {
+    "sample_id": "12",
+    "category": "QoS Control",
+    "intent_text": "Give DNS lookups from h2 to h1 expedited treatment.",
+    "config_json": {
+      "type": "HostToHostIntent",
+      "appId": "org.onosproject.cli",
+      "priority": 360,
+      "one": "4A:69:B2:E4:1F:44/None",
+      "two": "CE:52:DD:E0:04:42/None",
+      "selector": {
+        "criteria": [
+          { "type": "IP_PROTO", "protocol": "UDP" },
+          { "type": "UDP_DST", "port": "53" }
+        ]
+      }
+    },
+    "extra_metadata": {
+      "instruction": {
+        "purpose": "Only DNS queries should get bumped priority.",
+        "selector": "UDP dst 53 for DNS.",
+        "priority": "Use moderate high priority (300-400)."
+      }
+    }
+  },
+  {
+    "sample_id": "13",
+    "category": "Connectivity",
+    "intent_text": "Permit low-priority diagnostics between h4 and h2.",
+    "config_json": {
+      "type": "HostToHostIntent",
+      "appId": "org.onosproject.cli",
+      "priority": 80,
+      "one": "3E:66:C7:84:64:2E/None",
+      "two": "4A:69:B2:E4:1F:44/None"
+    },
+    "extra_metadata": {
+      "instruction": {
+        "purpose": "Allow h4↔h2 reachability but lower scheduling weight.",
+        "priority": "Set <100 to mark best-effort diagnostics.",
+        "hosts": "Swap order if user says h2 initiates."
+      }
+    }
   }
+    
 ]

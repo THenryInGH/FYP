@@ -86,13 +86,28 @@ ALTER ROLE fyp_admin SET search_path TO public;
 
 # 6. Data preparation
 1. Host-to-Host connectivity 
+- Ready
 
 2. Bandwidth/QoS constraint on flows
+- Ready
 
 3. Multi-ingress/ multi-egress flows (load balancing)
+- pending 
 
 4. Blocking/ security flows (simple ACLs)
+- pending
 
-# 7. Data insert
+# 7. Data insertion
+- OpenAI embedding model is paid API
+- Switch from 1536-dim to 768-dim 
+    1. Alter database
+    2. verify with `\d config_samples`
+    3. Modify any code assume 1536-dim. 
+
+- develop [send_data.py](/database/seed_data.py)
+
+
 
 # 8. Database integration
+
+# 9. 

@@ -126,14 +126,14 @@
       "selector": {
         "criteria": [
           { "type": "IP_PROTO", "protocol": "UDP" },
-          { "type": "UDP_DST", "udpPort": "5004" }
+          { "type": "UDP_DST", "udpPort": "5001" }
         ]
       }
     },
     "extra_metadata": {
       "instruction": {
         "purpose": "Apply QoS only to video traffic.",
-        "selector": "UDP + typical video RTP port 5004.",
+        "selector": "UDP + standard lab video port 5001 per evaluation plan.",
         "priority": "Higher priority → more resources."
       }
     }
@@ -151,14 +151,14 @@
       "selector": {
         "criteria": [
           { "type": "IP_PROTO", "protocol": "UDP" },
-          { "type": "UDP_SRC", "udpPort": "5060" }
+          { "type": "UDP_DST", "udpPort": "6000" }
         ]
       }
     },
     "extra_metadata": {
       "instruction": {
         "purpose": "SIP/VoIP control traffic QoS.",
-        "selector": "Match protocol + VoIP signalling port.",
+        "selector": "Match protocol + VoIP media/control dst port 6000 per test plan.",
         "priority": "450 = treated above normal data 100."
       }
     }
@@ -176,14 +176,14 @@
       "selector": {
         "criteria": [
           { "type": "IP_PROTO", "protocol": "TCP" },
-          { "type": "TCP_DST", "tcpPort": "20-21" }
+          { "type": "TCP_DST", "tcpPort": "8000" }
         ]
       }
     },
     "extra_metadata": {
       "instruction": {
         "purpose": "Deprioritize FTP bulk transfer.",
-        "selector": "TCP port 20–21.",
+        "selector": "TCP dst 8000 for file-transfer traffic per evaluation matrix.",
         "priority": "Lower (=50) → loses arbitration against higher intents."
       }
     }
@@ -209,30 +209,6 @@
   },
   {
     "sample_id": "10",
-    "category": "Connectivity",
-    "intent_text": "Allow telemetry reports from h2 to reach h3 while matching IPv4 traffic.",
-    "config_json": {
-      "type": "HostToHostIntent",
-      "appId": "org.onosproject.cli",
-      "priority": 110,
-      "one": "4A:69:B2:E4:1F:44/None",
-      "two": "46:8D:D5:AE:0A:52/None",
-      "selector": {
-        "criteria": [
-          { "type": "EthType", "ethType": "0x0800" }
-        ]
-      }
-    },
-    "extra_metadata": {
-      "instruction": {
-        "purpose": "Connectivity intent scoped to IPv4 telemetry packets.",
-        "selector": "EtherType 0x0800 ensures IPv4 only.",
-        "hosts": "MACs correspond to h2 (source) and h3 (destination)."
-      }
-    }
-  },
-  {
-    "sample_id": "11",
     "category": "QoS Control",
     "intent_text": "Boost priority for HTTP traffic from h3 to h1.",
     "config_json": {
@@ -244,7 +220,7 @@
       "selector": {
         "criteria": [
           { "type": "IP_PROTO", "protocol": "TCP" },
-          { "type": "TCP_DST", "port": "80" }
+          { "type": "TCP_DST", "tcpPort": "80" }
         ]
       }
     },
@@ -257,32 +233,32 @@
     }
   },
   {
-    "sample_id": "12",
+    "sample_id": "11",
     "category": "QoS Control",
-    "intent_text": "Give DNS lookups from h2 to h1 expedited treatment.",
+    "intent_text": "Throttle non-critical HTTP diagnostics from h2 to h3.",
     "config_json": {
       "type": "HostToHostIntent",
       "appId": "org.onosproject.cli",
-      "priority": 360,
+      "priority": 80,
       "one": "4A:69:B2:E4:1F:44/None",
-      "two": "CE:52:DD:E0:04:42/None",
+      "two": "46:8D:D5:AE:0A:52/None",
       "selector": {
         "criteria": [
-          { "type": "IP_PROTO", "protocol": "UDP" },
-          { "type": "UDP_DST", "port": "53" }
+          { "type": "IP_PROTO", "protocol": "TCP" },
+          { "type": "TCP_DST", "tcpPort": "80" }
         ]
       }
     },
     "extra_metadata": {
       "instruction": {
-        "purpose": "Only DNS queries should get bumped priority.",
-        "selector": "UDP dst 53 for DNS.",
-        "priority": "Use moderate high priority (300-400)."
+        "purpose": "Ensure HTTP diagnostics stay low priority to favor production traffic.",
+        "selector": "TCP dst 80 per evaluation reference table.",
+        "priority": "Keep below 100 to mark as best-effort."
       }
     }
   },
   {
-    "sample_id": "13",
+    "sample_id": "12",
     "category": "Connectivity",
     "intent_text": "Permit low-priority diagnostics between h4 and h2.",
     "config_json": {

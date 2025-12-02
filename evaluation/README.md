@@ -20,7 +20,7 @@
         | Video / Streaming | UDP      |           **5001** | 10.0.1.1:5001 → 10.0.2.1:5001 (UDP) |
         |     File transfer | TCP      |           **8000** | 10.0.1.2:8000 → 10.0.3.1:8000 (TCP) |
         |              VoIP | UDP      |           **6000** | 10.0.1.3:6000 → 10.0.2.3:6000 (UDP) |
-        |        HTTP (web) | TCP      | **80** or **8080** | 10.0.1.4:8080 → 10.0.2.4:8080 (TCP) |
+        |        HTTP (web) | TCP      | **80**  | 10.0.1.4:8080 → 10.0.2.4:8080 (TCP) |
         |       ICMP (ping) | ICMP     |                  — | use ping between IPs                |
 
 

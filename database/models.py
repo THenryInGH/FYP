@@ -16,8 +16,8 @@ from sqlalchemy.types import UserDefinedType
 # Define custom pgvector column type
 class Vector(UserDefinedType):
     def get_col_spec(self, **kw):
-        # Default to 1536 dimensions, adjust if needed
-        return "vector(1536)"
+        # Default to 768 dimensions, adjust if needed
+        return "vector(768)"
 
     def bind_processor(self, dialect):
         def process(value):
@@ -96,4 +96,4 @@ class ConfigSample(Base):
     intent_text = Column(Text)     # natural language intent
     config_json = Column(JSON)     # ONOS configuration example
     extra_metadata = Column(JSON)        # additional explanation
-    embedding = Column(Vector())  # 1536-d vector (OpenAI/Groq embeddings)
+    embedding = Column(Vector())  # 768-d vector (sentence-transformers/all-mpnet-base-v2)

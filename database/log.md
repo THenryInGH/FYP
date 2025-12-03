@@ -110,4 +110,8 @@ ALTER ROLE fyp_admin SET search_path TO public;
 
 # 8. Database integration
 
+## RAG 
+1. Problem 1: Python modules and packages import 
+2.  
+
 # 9. 

@@ -124,6 +124,7 @@ llama-server \
 2. **Embedding**: embed **chunks** using embeddings model of corresponding model, e.g GPT-OSS using [RoPE][7]
 3. **Retrieval**: When a query come in, **similar chunks** are retrieved using vector similarity search.
 4. **Generation**: Retrieved text is appended to LLM to produce grounded respnse.
+   - In code: `llm-engine/groq_client.py` calls `database.rag.embedded_client.get_similar_samples` with `top_k=3` and injects both a summary and the raw `config_json` payloads into the prompt. If retrieval fails or finds nothing, it falls back to a clear note so the request still goes through.
 
 ### [GraphRAG from Microsoft][8]
 - similar to traditional RAG, just DIFFERENT in DATA HANDLING

@@ -37,3 +37,5 @@ Average DB query : 0.0082 s
 ### 1. GPT-OSS-20B
 
 ## llama-server (llama.cpp)
+
+# Overall Response Time

@@ -124,7 +124,7 @@
             "selector": {
                 "criteria": [
                     { "type": "IP_PROTO", "protocol": "UDP" },
-                    { "type": "UDP_DST", "port": "6000" }
+                    { "type": "UDP_DST", "udpPort": "6000" }
                 ]
             }
         }
@@ -140,7 +140,7 @@
             "selector": {
                 "criteria": [
                     { "type": "IP_PROTO", "protocol": "TCP" },
-                    { "type": "TCP_DST", "port": "8000" }
+                    { "type": "TCP_DST", "tcpPort": "8000" }
                 ]
             }
         }

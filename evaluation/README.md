@@ -44,3 +44,14 @@
 - Users can give feedback on the response whether it is possitive or negative.
 - Response with possive feedback from users will be submitted to config_sample database.
 - Users can revert back the configuration done.
+
+## Non-functional evaluation
+### Response Time
+- [Record](/evaluation/response-time.md)
+- Script to record RAG response time [here](/evaluation/measure_similarity.py)
+    ```bash
+    cd /home/henry/FYP
+    uv run python -m evaluation.measure_similarity --limit 10 --top-k 3
+    ```
+
+    

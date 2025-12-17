@@ -64,6 +64,20 @@ Example intents:
 - significant components in this project
 ```
 FYP/
+├─ backend/ 
+  ├─ main.py (FastAPI entrypoint; replaces llm-engine/agent.py)
+  ├─ api/
+    ├─ auth.py (login/me) [planned]
+    ├─ chat.py (generate endpoint)
+    ├─ onos.py (proxy ONOS endpoints)
+  ├─ services/
+    ├─ llm/ (groq_client.py, prompt building)
+    ├─ onos/ (onos_client.py, caching)
+    ├─ rag/ (embedded client/server helpers)
+  ├─ db/
+    ├─ models.py (move from database/models.py) [planned]
+    ├─ session.py / database.py (DB engine/session) [planned]
+    ├─ seed.py [planned]
 ├─ database/ 
   ├─ data/
 ├─ diagram/
@@ -117,7 +131,7 @@ FYP/
 3. `6653`: ONOS Listening OpenFlow
 4. `8181`: ONOS GUI 
 #### Host B
-1. `0.0.0.0:5000`: agent endpoint (FastAPI)
+1. `0.0.0.0:5000`: backend API endpoint (FastAPI)
 2. `localhost:8080`: llama-server end point
 ### Hosts Specification
 #### Host A (Supermicro)
@@ -140,9 +154,12 @@ cd FYP
 llama-server -m ./llm-engine/models/gpt-oss/gpt-oss-20b-mxfp4.gguf --n-cpu-moe 36 --n-gpu-layers 999 -c 0 --port 8080 
 ```
 
-2. start FastAPI server
+2. start Backend FastAPI server (new structure)
 ```bash
-cd FYP/llm-engine
-uvicorn agent:app --host 0.0.0.0 --port 5000
+cd FYP
+uv run uvicorn backend.main:app --host 0.0.0.0 --port 5000
 ``` 
+
+> Note: `llm-engine/agent.py` is the older entrypoint. We keep it during migration,
+> but the backend should now be started from `backend/main.py`.
 

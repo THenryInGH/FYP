@@ -11,3 +11,5 @@
 - frontend
     - change .env from private IP to localhost
 - database
+
+## 2. ONOS disconnect with testbed with unknown reason

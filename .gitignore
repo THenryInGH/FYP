@@ -11,11 +11,13 @@ llm-engine/models/*
 # Ignore logs and database files
 *.log
 
-# Ignore Python cache files
-llm-engine/__pycache__/
-database/__pycache__/
-database/rag/__pycache__/
-evaluation/__pycache__/
+# Ignore Python cache files (all packages)
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
 # environment variables file
 .env

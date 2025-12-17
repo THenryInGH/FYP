@@ -1,0 +1,81 @@
+rag,model,run_no,accuracy,response_time_ms
+with_rag,GPT-OSS-120B,1,100.0,2526.0
+with_rag,GPT-OSS-120B,2,100.0,4231.0
+with_rag,GPT-OSS-120B,3,100.0,4138.0
+with_rag,GPT-OSS-120B,4,100.0,3433.0
+with_rag,GPT-OSS-120B,5,100.0,4883.0
+with_rag,GPT-OSS-120B,6,100.0,6747.0
+with_rag,GPT-OSS-120B,7,100.0,5273.0
+with_rag,GPT-OSS-120B,8,100.0,4740.0
+with_rag,GPT-OSS-120B,9,100.0,6230.0
+with_rag,GPT-OSS-120B,10,100.0,4784.0
+with_rag,GPT-OSS-20B,1,100.0,1194.0
+with_rag,GPT-OSS-20B,2,100.0,1187.0
+with_rag,GPT-OSS-20B,3,50.0,1396.0
+with_rag,GPT-OSS-20B,4,100.0,1907.0
+with_rag,GPT-OSS-20B,5,100.0,2886.0
+with_rag,GPT-OSS-20B,6,100.0,1806.0
+with_rag,GPT-OSS-20B,7,100.0,1706.0
+with_rag,GPT-OSS-20B,8,100.0,2322.0
+with_rag,GPT-OSS-20B,9,100.0,3423.0
+with_rag,GPT-OSS-20B,10,50.0,3864.0
+with_rag,Llama 3.3 70B,1,100.0,2168.0
+with_rag,Llama 3.3 70B,2,100.0,2268.0
+with_rag,Llama 3.3 70B,3,100.0,2785.0
+with_rag,Llama 3.3 70B,4,100.0,3443.0
+with_rag,Llama 3.3 70B,5,100.0,4606.0
+with_rag,Llama 3.3 70B,6,100.0,4723.0
+with_rag,Llama 3.3 70B,7,100.0,5194.0
+with_rag,Llama 3.3 70B,8,100.0,5789.0
+with_rag,Llama 3.3 70B,9,50.0,7182.0
+with_rag,Llama 3.3 70B,10,100.0,7852.0
+with_rag,Qwen3 32B,1,100.0,4070.0
+with_rag,Qwen3 32B,2,100.0,2339.0
+with_rag,Qwen3 32B,3,100.0,3926.0
+with_rag,Qwen3 32B,4,100.0,25864.0
+with_rag,Qwen3 32B,5,100.0,6091.0
+with_rag,Qwen3 32B,6,100.0,7786.0
+with_rag,Qwen3 32B,7,100.0,8855.0
+with_rag,Qwen3 32B,8,100.0,11756.0
+with_rag,Qwen3 32B,9,0.0,69317.0
+with_rag,Qwen3 32B,10,0.0,122362.0
+without_rag,GPT-OSS-120B,1,100.0,2052.0
+without_rag,GPT-OSS-120B,2,100.0,2596.0
+without_rag,GPT-OSS-120B,3,100.0,3461.0
+without_rag,GPT-OSS-120B,4,50.0,4521.0
+without_rag,GPT-OSS-120B,5,100.0,4873.0
+without_rag,GPT-OSS-120B,6,50.0,4782.0
+without_rag,GPT-OSS-120B,7,50.0,5778.0
+without_rag,GPT-OSS-120B,8,50.0,7009.0
+without_rag,GPT-OSS-120B,9,100.0,7520.0
+without_rag,GPT-OSS-120B,10,0.0,3251.0
+without_rag,GPT-OSS-20B,1,0.0,2295.0
+without_rag,GPT-OSS-20B,2,0.0,1620.0
+without_rag,GPT-OSS-20B,3,0.0,1518.0
+without_rag,GPT-OSS-20B,4,0.0,4472.0
+without_rag,GPT-OSS-20B,5,0.0,3408.0
+without_rag,GPT-OSS-20B,6,0.0,2075.0
+without_rag,GPT-OSS-20B,7,0.0,1840.0
+without_rag,GPT-OSS-20B,8,0.0,2249.0
+without_rag,GPT-OSS-20B,9,0.0,2132.0
+without_rag,GPT-OSS-20B,10,0.0,1355.0
+without_rag,Llama 3.3 70B,1,0.0,3324.0
+without_rag,Llama 3.3 70B,2,0.0,4271.0
+without_rag,Llama 3.3 70B,3,0.0,4120.0
+without_rag,Llama 3.3 70B,4,0.0,4652.0
+without_rag,Llama 3.3 70B,5,0.0,6731.0
+without_rag,Llama 3.3 70B,6,0.0,5584.0
+without_rag,Llama 3.3 70B,7,0.0,4965.0
+without_rag,Llama 3.3 70B,8,0.0,6564.0
+without_rag,Llama 3.3 70B,9,0.0,5833.0
+without_rag,Llama 3.3 70B,10,0.0,5885.0
+without_rag,Qwen3 32B,1,0.0,11292.0
+without_rag,Qwen3 32B,2,0.0,4055.0
+without_rag,Qwen3 32B,3,0.0,18984.0
+without_rag,Qwen3 32B,4,0.0,4111.0
+without_rag,Qwen3 32B,5,0.0,11649.0
+without_rag,Qwen3 32B,6,0.0,4595.0
+without_rag,Qwen3 32B,7,0.0,4408.0
+without_rag,Qwen3 32B,8,0.0,5837.0
+without_rag,Qwen3 32B,9,0.0,7204.0
+without_rag,Qwen3 32B,10,0.0,6933.0

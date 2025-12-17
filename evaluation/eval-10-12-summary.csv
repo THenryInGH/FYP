@@ -1,0 +1,5 @@
+model,avg_accuracy_without_rag,avg_accuracy_with_rag,avg_rt_ms_without_rag,avg_rt_ms_with_rag
+GPT-OSS-120B,70.0,100.0,4584.3,4698.5
+GPT-OSS-20B,0.0,90.0,2296.4,2169.1
+Llama 3.3 70B,0.0,95.0,5192.9,4601.0
+Qwen3 32B,0.0,80.0,7906.8,26236.6

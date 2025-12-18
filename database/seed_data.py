@@ -26,6 +26,9 @@ from sqlalchemy.orm import Session
 
 from database import SessionLocal
 from models import ConfigSample, Device, User
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 DATA_DIR = Path(__file__).parent / "data"
 
@@ -59,11 +62,17 @@ def seed_users(session: Session) -> None:
         return
 
     for row in rows:
+        password_hash = row["password_hash"]
+        # Your fixtures may contain placeholder values (e.g. "hash123").
+        # If it doesn't look like a real bcrypt hash, treat it as plaintext and hash it.
+        if isinstance(password_hash, str) and not password_hash.startswith("$2"):
+            password_hash = pwd_context.hash(password_hash)
+
         payload = {
             "user_id": int(row["user_id"]),
             "username": row["username"],
             "email": row["email"],
-            "password_hash": row["password_hash"],
+            "password_hash": password_hash,
             "created_at": _parse_timestamp(row.get("created_at")),
         }
         session.merge(User(**payload))

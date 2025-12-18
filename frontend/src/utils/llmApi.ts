@@ -1,3 +1,5 @@
+import { getAccessToken } from "./authStorage";
+
 const LLM_API = import.meta.env.VITE_LLM_API;
 
 export type LLMOptions = {
@@ -19,10 +21,12 @@ export async function sendPromptToLLM(
 ): Promise<LLMApiResult> {
   const start = performance.now();
   try {
+    const token = getAccessToken();
     const response = await fetch(LLM_API, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify({
         prompt,

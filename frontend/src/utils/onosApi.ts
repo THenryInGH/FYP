@@ -1,14 +1,8 @@
-const ONOS_API = import.meta.env.VITE_ONOS_API;
-const ONOS_USER = import.meta.env.VITE_ONOS_USERNAME;
-const ONOS_PASS = import.meta.env.VITE_ONOS_PASSWORD;
-
-const baseAuth = "Basic " + btoa(`${ONOS_USER}:${ONOS_PASS}`);
+const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:8000";
 
 async function get(endpoint: string) {
   try {
-    const res = await fetch(`${ONOS_API}${endpoint}`, {
-      headers: { Authorization: baseAuth },
-    });
+    const res = await fetch(`${API_BASE}/onos${endpoint}`);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();
   } catch (err) {
@@ -19,10 +13,9 @@ async function get(endpoint: string) {
 
 async function post(endpoint: string, body: any) {
   try {
-    const res = await fetch(`${ONOS_API}${endpoint}`, {
+    const res = await fetch(`${API_BASE}/onos${endpoint}`, {
       method: "POST",
       headers: {
-        Authorization: baseAuth,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
@@ -39,9 +32,8 @@ async function post(endpoint: string, body: any) {
 
 async function del(endpoint: string) {
   try {
-    const res = await fetch(`${ONOS_API}${endpoint}`, {
+    const res = await fetch(`${API_BASE}/onos${endpoint}`, {
       method: "DELETE",
-      headers: { Authorization: baseAuth },
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return true;

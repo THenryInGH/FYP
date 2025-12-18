@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { getDevices } from '../utils/devicesApi';
 import { onosApi } from '../utils/onosApi';
 
 export type TopoNode = {
@@ -26,14 +27,14 @@ export function useOnosTopology(pollMs = 5000) {
 
   async function load() {
     const [devices, hosts, linksJson] = await Promise.all([
-      onosApi.getDevices(),
+      getDevices(),
       onosApi.getHosts(),
       onosApi.getLinks(),
     ]);
 
     const deviceNodes: TopoNode[] = (devices?.devices ?? []).map((d: any) => ({
       id: d.id,
-      label: d.id.replace(/^of:/, ''),
+      label: d.friendly_name ?? d.id.replace(/^of:/, ''),
       kind: 'device',
     }));
 

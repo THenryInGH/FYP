@@ -35,7 +35,7 @@ def generate_response(req: GenerateRequest) -> dict[str, Any]:
         timings = {}
         if isinstance(result, dict):
             timings = result.get("timings") or {}
-            timings.setdefault("total_seconds", time.perf_counter() - start)
+            timings["total_seconds"] = time.perf_counter() - start
             return {
                 "status": "success",
                 "response": result.get("content"),

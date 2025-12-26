@@ -54,7 +54,7 @@ Example intents:
 
 
 ## Architecture
-<!--Architecture diagram here-->
+![System architecture](<diagram/system architecture.png>)
 
 
 

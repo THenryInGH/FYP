@@ -14,12 +14,16 @@ function Login() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (mode === "login") {
-      await login(usernameOrEmail, password);
-      nav("/");
-    } else {
-      await register(username, email, password);
-      nav("/");
+    try {
+      if (mode === "login") {
+        await login(usernameOrEmail, password);
+        nav("/");
+      } else {
+        await register(username, email, password);
+        nav("/");
+      }
+    } catch {
+      // AuthContext already sets a user-friendly error message.
     }
   }
 
@@ -95,6 +99,18 @@ function Login() {
               type="password"
               required
             />
+            {mode === "register" ? (
+              <div className="mt-2 text-xs text-gray-600">
+                <p className="font-medium text-gray-700">Password requirements:</p>
+                <ul className="list-disc pl-5 mt-1 space-y-0.5">
+                  <li>8–72 characters</li>
+                  <li>Any characters allowed (letters, numbers, symbols)</li>
+                  <li className="text-gray-500">
+                    Tip: use a mix of upper/lowercase, numbers, and symbols for stronger security.
+                  </li>
+                </ul>
+              </div>
+            ) : null}
           </div>
 
           <button

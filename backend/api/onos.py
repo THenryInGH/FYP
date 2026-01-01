@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, Body, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException
 
 from backend.services.onos.onos_client import (
     delete_intent,
@@ -14,6 +14,7 @@ from backend.services.onos.onos_client import (
     get_network_links,
     post_intent,
 )
+from backend.services.auth.deps import get_current_user
 
 router = APIRouter()
 
@@ -55,7 +56,7 @@ def intents() -> dict[str, Any]:
 
 
 @router.post("/intents")
-def create_intent(payload: dict = Body(...)) -> dict[str, Any]:
+def create_intent(payload: dict = Body(...), _current_user=Depends(get_current_user)) -> dict[str, Any]:
     try:
         res = post_intent(payload) or {"status": "ok"}
         return {"status": "success", "result": res}
@@ -64,7 +65,7 @@ def create_intent(payload: dict = Body(...)) -> dict[str, Any]:
 
 
 @router.delete("/intents/{app_id}/{key}")
-def remove_intent(app_id: str, key: str) -> dict[str, Any]:
+def remove_intent(app_id: str, key: str, _current_user=Depends(get_current_user)) -> dict[str, Any]:
     try:
         delete_intent(app_id, key)
         return {"status": "success"}

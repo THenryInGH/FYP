@@ -8,6 +8,18 @@ export async function getDevices() {
   return await res.json();
 }
 
+export async function getManagedDevices() {
+  const res = await fetch(`${API_BASE}/devices/managed`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.json();
+}
+
+export async function getHosts() {
+  const res = await fetch(`${API_BASE}/hosts`);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return await res.json();
+}
+
 export async function setDeviceFriendlyName(deviceId: string, name: string | null) {
   const token = getAccessToken();
   const res = await fetch(`${API_BASE}/devices/${encodeURIComponent(deviceId)}/name`, {
@@ -17,6 +29,20 @@ export async function setDeviceFriendlyName(deviceId: string, name: string | nul
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
     body: JSON.stringify({ name }),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data?.detail || `HTTP ${res.status}`);
+  }
+}
+
+export async function deleteManagedDevice(deviceId: string) {
+  const token = getAccessToken();
+  const res = await fetch(`${API_BASE}/devices/${encodeURIComponent(deviceId)}`, {
+    method: "DELETE",
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
   });
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));

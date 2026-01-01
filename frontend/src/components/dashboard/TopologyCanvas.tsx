@@ -4,6 +4,12 @@ import type { Simulation, ForceLink, SimulationLinkDatum } from 'd3-force';
 import { useOnosTopology } from '../../hooks/useOnosTopology';
 import type { TopoNode } from '../../hooks/useOnosTopology';
 
+function truncateLabel(label: string, max = 14) {
+  const s = String(label ?? '');
+  if (s.length <= max) return s;
+  return s.slice(0, Math.max(0, max - 1)) + '…';
+}
+
 function TopologyCanvas() {
   const { nodes, links } = useOnosTopology(8000);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -120,7 +126,7 @@ function TopologyCanvas() {
         ctx.font = '13px system-ui, sans-serif';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
-        ctx.fillText(n.label, n.x!, n.y! + r + 4);
+        ctx.fillText(truncateLabel(n.label), n.x!, n.y! + r + 4);
       }
 
       raf = requestAnimationFrame(() => {});

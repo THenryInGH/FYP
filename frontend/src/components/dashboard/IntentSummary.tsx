@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { onosApi } from "../../utils/onosApi";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../auth/AuthContext";
 
 type Intent = {
   appId: string;
@@ -10,6 +12,8 @@ type Intent = {
 };
 
 export default function IntentSummary() {
+  const nav = useNavigate();
+  const { user } = useAuth();
   const [intents, setIntents] = useState<Intent[]>([]);
   const [deleting, setDeleting] = useState<string | null>(null);
 
@@ -25,6 +29,11 @@ export default function IntentSummary() {
   }, []);
 
   const handleDelete = async (appId: string, key: string) => {
+    if (!user) {
+      alert("Login required to delete intents.");
+      nav("/login");
+      return;
+    }
     if (!confirm("Are you sure you want to delete this intent?")) return;
     setDeleting(`${appId}:${key}`);
     const success = await onosApi.deleteIntent(appId, key);

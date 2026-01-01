@@ -48,6 +48,7 @@ class User(Base):
     # Relationships (used for joins or cascades)
     chats = relationship("ChatHistory", back_populates="user")
     configs = relationship("ConfigurationHistory", back_populates="user")
+    conversations = relationship("Conversation", back_populates="user")
 
 # 2️⃣ Chat History Table
 class ChatHistory(Base):
@@ -61,6 +62,35 @@ class ChatHistory(Base):
 
     # Relationship back to user
     user = relationship("User", back_populates="chats")
+
+
+# 2️⃣b Conversation Table (multi-chat support)
+class Conversation(Base):
+    __tablename__ = "conversations"
+
+    conversation_id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.user_id", ondelete="CASCADE"), index=True, nullable=False)
+    title = Column(String(200), nullable=True)
+    created_at = Column(TIMESTAMP)
+    updated_at = Column(TIMESTAMP)
+
+    user = relationship("User", back_populates="conversations")
+    messages = relationship("Message", back_populates="conversation", cascade="all, delete-orphan")
+
+
+# 2️⃣c Message Table (one row per message)
+class Message(Base):
+    __tablename__ = "messages"
+
+    message_id = Column(Integer, primary_key=True, index=True)
+    conversation_id = Column(
+        Integer, ForeignKey("conversations.conversation_id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    role = Column(String(20), nullable=False)  # user | assistant | system
+    content = Column(Text, nullable=False)
+    created_at = Column(TIMESTAMP)
+
+    conversation = relationship("Conversation", back_populates="messages")
 
 # 3️⃣ Configuration History Table
 class ConfigurationHistory(Base):

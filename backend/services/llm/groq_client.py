@@ -140,5 +140,6 @@ def get_samples_json(user_prompt: str, *, top_k: int = 3) -> Dict[str, Any]:
     }
 
 
+# __all__ is a module-level variable that specifies the names can be exported when someone imports this module.
 __all__ = ["send_prompt"]
 

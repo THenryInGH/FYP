@@ -3,10 +3,11 @@ from __future__ import annotations
 import time
 from typing import Any
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
 from backend.services.llm.groq_client import send_prompt
+from backend.services.auth.deps import get_current_user
 
 router = APIRouter(tags=["chat"])
 
@@ -18,11 +19,11 @@ class GenerateRequest(BaseModel):
 
 
 @router.post("/generate")
-def generate_response(req: GenerateRequest) -> dict[str, Any]:
+def generate_response(req: GenerateRequest, _current_user=Depends(get_current_user)) -> dict[str, Any]:
     """
     Backward-compatible endpoint: mirrors llm-engine/agent.py /generate.
 
-    Frontend can keep using this path while we migrate structure.
+    Frontend can keep using this path while migrating to new structure.
     """
     start = time.perf_counter()
     try:

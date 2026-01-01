@@ -4,7 +4,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css';
 import App from './App.tsx';
 import Dashboard from './components/dashboard/Dashboard.tsx';
+import ConfigLibrary from './components/pages/ConfigLibrary.tsx';
 import Docs from './components/pages/Docs.tsx';
+import Devices from './components/pages/Devices.tsx';
 import Login from './components/pages/Login.tsx';
 import { AuthProvider } from "./auth/AuthContext";
 
@@ -17,6 +19,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <Route path="/" element={<App />}>
             <Route index element={<Dashboard />} />
             <Route path="docs" element={<Docs />} />
+            <Route path="devices" element={<Devices />} />
+            <Route path="config-library" element={<ConfigLibrary />} />
             <Route path="login" element={<Login />} />
           </Route>
         </Routes>

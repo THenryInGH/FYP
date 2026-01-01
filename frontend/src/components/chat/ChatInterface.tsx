@@ -1,8 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import IntentInput from "./IntentInput";
-import { sendPromptToLLM } from "../../utils/llmApi";
 import { ChevronLeft, ChevronRight, Minus, Plus } from "lucide-react";
 import { onosApi } from "../../utils/onosApi"; // ✅ Assuming you already have this
+import { useAuth } from "../../auth/AuthContext";
+import {
+  createConversation,
+  listConversations,
+  listMessages,
+  sendMessage,
+  type Conversation,
+  type Message as DbMessage,
+} from "../../utils/chatApi";
 
 type Message = {
   role: "User" | "Agent";
@@ -22,16 +31,84 @@ const MODEL_OPTIONS = [
 ];
 
 const ChatInterface: React.FC = () => {
+  const nav = useNavigate();
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [width, setWidth] = useState(33);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeConversationId, setActiveConversationId] = useState<number | null>(null);
   const [selectedModel, setSelectedModel] = useState(MODEL_OPTIONS[0].value);
   const [useRag, setUseRag] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [lastLatencyMs, setLastLatencyMs] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [contextExceeded, setContextExceeded] = useState(false);
+
+  const activeConversation = useMemo(
+    () => conversations.find((c) => c.conversation_id === activeConversationId) ?? null,
+    [conversations, activeConversationId]
+  );
+
+  function dbToUiMessages(rows: DbMessage[]): Message[] {
+    return rows
+      .filter((m) => m.role === "user" || m.role === "assistant")
+      .map((m) => ({
+        role: m.role === "user" ? "User" : "Agent",
+        text: m.content,
+      }));
+  }
+
+  async function refreshConversations(selectId?: number | null) {
+    const list = await listConversations();
+    setConversations(list);
+    const nextId = selectId ?? activeConversationId ?? (list.length ? list[0].conversation_id : null);
+    setActiveConversationId(nextId);
+    return list;
+  }
+
+  async function ensureConversation() {
+    const list = await refreshConversations();
+    if (!list.length) {
+      const convo = await createConversation();
+      setConversations([convo]);
+      setActiveConversationId(convo.conversation_id);
+      return convo.conversation_id;
+    }
+    return (activeConversationId ?? list[0].conversation_id) as number;
+  }
+
+  async function loadConversationMessages(conversationId: number) {
+    const rows = await listMessages(conversationId);
+    setMessages(dbToUiMessages(rows));
+  }
+
+  useEffect(() => {
+    if (!isOpen) return;
+    if (!user) return;
+    ensureConversation().catch((e: any) => setError(e?.message || "Failed to load chats"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, user?.user_id]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    if (!user) return;
+    if (activeConversationId == null) return;
+    loadConversationMessages(activeConversationId).catch((e: any) =>
+      setError(e?.message || "Failed to load messages")
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeConversationId, isOpen, user?.user_id]);
 
   const handleSubmit = async (message: string) => {
+    if (!user) {
+      setError("Login required to use the chat.");
+      setIsOpen(true);
+      nav("/login");
+      return;
+    }
+    const convoId = activeConversationId ?? (await ensureConversation());
+    setContextExceeded(false);
     setMessages((prev) => [...prev, { role: "User", text: message }]);
     setIsSubmitting(true);
     setError(null);
@@ -39,26 +116,43 @@ const ChatInterface: React.FC = () => {
     const start = performance.now();
 
     try {
-      const reply = await sendPromptToLLM(message, {
+      const res = await sendMessage(convoId, {
+        content: message,
         model: selectedModel,
-        useRag,
+        use_rag: useRag,
       });
-      const latency = reply.processingMs ?? performance.now() - start;
+      const latency = performance.now() - start;
 
       setLastLatencyMs(latency);
+      setConversations((prev) => {
+        const next = prev.slice();
+        const idx = next.findIndex((c) => c.conversation_id === res.conversation.conversation_id);
+        if (idx >= 0) next[idx] = res.conversation;
+        else next.unshift(res.conversation);
+        return next;
+      });
       setMessages((prev) => [
         ...prev,
         {
           role: "Agent",
-          text: reply.text,
+          text: res.assistant_message.content,
           latencyMs: latency,
-          model: reply.model || selectedModel,
-          useRag: reply.useRag ?? useRag,
+          model: selectedModel,
+          useRag: useRag,
         },
       ]);
     } catch (err) {
       console.error("Error contacting LLM API:", err);
-      setError("Unable to contact LLM Agent. Please try again.");
+      const msg = (err as any)?.message || "";
+      if (msg.toLowerCase().includes("not authenticated") || msg.includes("401")) {
+        setError("Login required to use the chat.");
+        nav("/login");
+      } else if (msg.toLowerCase().includes("context too long")) {
+        setError(msg);
+        setContextExceeded(true);
+      } else {
+        setError(msg || "Unable to contact LLM Agent. Please try again.");
+      }
       setMessages((prev) => [
         ...prev,
         { role: "Agent", text: "Error: Unable to contact LLM Agent." },
@@ -69,6 +163,11 @@ const ChatInterface: React.FC = () => {
   };
 
   const handleApplyConfiguration = async (configText: string) => {
+    if (!user) {
+      alert("Login required to apply configuration.");
+      nav("/login");
+      return;
+    }
     const result = await onosApi.applyConfiguration(configText);
     if (result) {
       alert("Intent applied successfully!");
@@ -106,6 +205,11 @@ const ChatInterface: React.FC = () => {
                     Last response: {Math.round(lastLatencyMs)} ms
                   </p>
                 )}
+                {activeConversation ? (
+                  <p className="text-[11px] text-gray-600 mt-0.5">
+                    Chat: {activeConversation.title ?? `#${activeConversation.conversation_id}`}
+                  </p>
+                ) : null}
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -153,63 +257,133 @@ const ChatInterface: React.FC = () => {
                   {error}
                 </span>
               )}
+              {contextExceeded && user ? (
+                <button
+                  type="button"
+                  className="text-xs px-2 py-1 rounded border bg-white hover:bg-gray-50"
+                  onClick={async () => {
+                    const convo = await createConversation();
+                    setConversations((prev) => [convo, ...prev]);
+                    setActiveConversationId(convo.conversation_id);
+                    setMessages([]);
+                    setContextExceeded(false);
+                    setError(null);
+                  }}
+                >
+                  Start new chat
+                </button>
+              ) : null}
             </div>
           </div>
 
-          {/* Chat messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 text-sm">
-            {messages.map((msg, i) => (
-              <div key={i}>
-                <p
-                  className={`${
-                    msg.role === "User"
-                      ? "text-blue-700"
-                      : "text-green-800 font-medium"
-                  }`}
+          <div className="flex-1 min-h-0 flex">
+            {/* Left: conversations list */}
+            <div className="w-44 border-r bg-white/70 overflow-y-auto">
+              <div className="p-2 border-b flex items-center justify-between gap-2">
+                <div className="text-xs font-semibold text-gray-700">Chats</div>
+                <button
+                  type="button"
+                  className="text-xs px-2 py-1 rounded border hover:bg-gray-50 disabled:opacity-60"
+                  disabled={!user}
+                  onClick={async () => {
+                    if (!user) {
+                      nav("/login");
+                      return;
+                    }
+                    const convo = await createConversation();
+                    setConversations((prev) => [convo, ...prev]);
+                    setActiveConversationId(convo.conversation_id);
+                    setMessages([]);
+                    setError(null);
+                    setContextExceeded(false);
+                  }}
                 >
-                  <strong>{msg.role}:</strong> {msg.text.split("```json")[0].trim()}
-                </p>
-
-                {msg.role === "Agent" && (
-                  <p className="text-[11px] text-gray-500 mt-1">
-                    {msg.latencyMs !== undefined && (
-                      <span>Response time: {Math.round(msg.latencyMs)} ms</span>
-                    )}
-                    {msg.model && <span> · Model: {msg.model}</span>}
-                    {msg.useRag !== undefined && (
-                      <span> · RAG {msg.useRag ? "on" : "off"}</span>
-                    )}
-                  </p>
-                )}
-
-                {/* JSON container if exists */}
-                {msg.text.includes("```json") && (
-                  <div className="bg-gray-50 border border-gray-300 rounded-lg p-3 mt-2 shadow-inner overflow-x-auto">
-                    <pre className="text-xs text-gray-800 font-mono whitespace-pre-wrap">
-                      {msg.text.match(/```json\s*([\s\S]*?)```/)?.[1] ?? ""}
-                    </pre>
-
-                    {/* Apply button */}
-                    <button
-                      onClick={() =>
-                        handleApplyConfiguration(
-                          msg.text.match(/```json\s*([\s\S]*?)```/)?.[1] ?? ""
-                        )
-                      }
-                      className="mt-3 px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
-                    >
-                      Apply Configuration
-                    </button>
-                  </div>
-                )}
+                  New
+                </button>
               </div>
-            ))}
+              <div className="divide-y">
+                {conversations.map((c) => (
+                  <button
+                    key={c.conversation_id}
+                    type="button"
+                    className={`w-full text-left px-2 py-2 text-xs hover:bg-gray-50 ${
+                      c.conversation_id === activeConversationId ? "bg-gray-50" : ""
+                    }`}
+                    onClick={() => setActiveConversationId(c.conversation_id)}
+                  >
+                    <div className="font-medium text-gray-900 truncate">
+                      {c.title ?? `Chat #${c.conversation_id}`}
+                    </div>
+                  </button>
+                ))}
+                {!conversations.length ? (
+                  <div className="p-3 text-xs text-gray-500">
+                    {user ? "No chats yet." : "Login to see chats."}
+                  </div>
+                ) : null}
+              </div>
+            </div>
+
+            {/* Right: messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 text-sm">
+              {messages.map((msg, i) => (
+                <div key={i}>
+                  <p
+                    className={`${
+                      msg.role === "User"
+                        ? "text-blue-700"
+                        : "text-green-800 font-medium"
+                    }`}
+                  >
+                    <strong>{msg.role}:</strong> {msg.text.split("```json")[0].trim()}
+                  </p>
+
+                  {msg.role === "Agent" && (
+                    <p className="text-[11px] text-gray-500 mt-1">
+                      {msg.latencyMs !== undefined && (
+                        <span>Response time: {Math.round(msg.latencyMs)} ms</span>
+                      )}
+                      {msg.model && <span> · Model: {msg.model}</span>}
+                      {msg.useRag !== undefined && (
+                        <span> · RAG {msg.useRag ? "on" : "off"}</span>
+                      )}
+                    </p>
+                  )}
+
+                  {/* JSON container if exists */}
+                  {msg.text.includes("```json") && (
+                    <div className="bg-gray-50 border border-gray-300 rounded-lg p-3 mt-2 shadow-inner overflow-x-auto">
+                      <pre className="text-xs text-gray-800 font-mono whitespace-pre-wrap">
+                        {msg.text.match(/```json\s*([\s\S]*?)```/)?.[1] ?? ""}
+                      </pre>
+
+                      {/* Apply button */}
+                      <button
+                        onClick={() =>
+                          handleApplyConfiguration(
+                            msg.text.match(/```json\s*([\s\S]*?)```/)?.[1] ?? ""
+                          )
+                        }
+                        className="mt-3 px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+                      >
+                        Apply Configuration
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+              {!messages.length ? (
+                <div className="text-sm text-gray-500">
+                  {user ? "Start by sending a message." : "Login to start chatting."}
+                </div>
+              ) : null}
+            </div>
           </div>
 
 
           {/* Input area */}
           <div className="p-3 border-t border-gray-200 bg-gray-100/60">
-            <IntentInput onSubmit={handleSubmit} disabled={isSubmitting} />
+            <IntentInput onSubmit={handleSubmit} disabled={isSubmitting || !user} />
           </div>
         </div>
       </div>

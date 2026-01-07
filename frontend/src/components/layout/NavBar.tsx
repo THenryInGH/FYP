@@ -36,6 +36,7 @@ function NavBar() {
         <Link to="/" className="hover:underline">Dashboard</Link>
         <Link to="/devices" className="hover:underline">Devices</Link>
         <Link to="/config-library" className="hover:underline">Samples</Link>
+        <Link to="/tests" className="hover:underline">Tests</Link>
         <Link to="/docs" className="hover:underline">Docs</Link>
         {user ? (
           <div className="relative inline-block" ref={menuRef}>

@@ -11,6 +11,7 @@ from backend.api.config_samples import router as config_samples_router
 from backend.api.devices import router as devices_router
 from backend.api.hosts import router as hosts_router
 from backend.api.onos import router as onos_router
+from backend.api.tests import router as tests_router
 import os
 
 
@@ -43,6 +44,9 @@ def create_app() -> FastAPI:
 
     # Config samples library (RAG examples)
     app.include_router(config_samples_router)
+
+    # Testbed verification endpoints (ping/iperf)
+    app.include_router(tests_router)
 
     # New: backend-owned ONOS proxy endpoints (optional to adopt on frontend).
     app.include_router(onos_router, prefix="/onos", tags=["onos"])

@@ -9,6 +9,7 @@ set -euo pipefail
 # Commands:
 #   list
 #   ping <src_ns> <dst_ip> [count] [timeout_seconds]
+#   iperf <src_ns> <dst_ns> <dst_ip> <tcp|udp> [port] [duration_seconds] [udp_mbps] [tos_hex]
 #
 # Output: JSON to stdout.
 
@@ -32,9 +33,29 @@ is_valid_ipv4() {
   return 0
 }
 
+is_valid_proto() {
+  [[ "$1" == "tcp" || "$1" == "udp" ]]
+}
+
+is_valid_tos() {
+  # iperf3 expects an 8-bit TOS byte (often written as hex)
+  # Example: 0xb8 (DSCP EF 46 << 2)
+  [[ -z "${1:-}" ]] && return 0
+  [[ "$1" =~ ^0x[0-9a-fA-F]{1,2}$ ]]
+}
+
 json_escape() {
   # Minimal JSON escaping for stdout/stderr content
-  sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' -e 's/\r//g' -e ':a;N;$!ba;s/\n/\\n/g'
+  # Note: JSON strings cannot contain literal tab/newline characters.
+  # iperf3 emits pretty JSON with tabs/newlines; we must escape both.
+  # IMPORTANT: We must first slurp the entire input into pattern space (so escaping applies to *all* lines),
+  # then escape characters on the whole blob.
+  sed -e ':a;N;$!ba' \
+      -e 's/\\/\\\\/g' \
+      -e 's/"/\\"/g' \
+      -e 's/	/\\t/g' \
+      -e 's/\r//g' \
+      -e 's/\n/\\n/g'
 }
 
 cmd="${1:-}"
@@ -116,6 +137,88 @@ case "$cmd" in
     ok="false"
     if [[ $exit_code -eq 0 ]]; then ok="true"; fi
     echo "{\"ok\":$ok,\"type\":\"ping\",\"src_ns\":\"$src_ns\",\"dst_ip\":\"$dst_ip\",\"count\":$count,\"timeout_seconds\":$timeout_s,\"exit_code\":$exit_code,\"loss_pct\":${loss_pct:-null},\"rtt_avg_ms\":${rtt_avg_ms:-null},\"raw\":\"$esc_out\"}"
+    ;;
+
+  iperf)
+    src_ns="${1:-}"; dst_ns="${2:-}"; dst_ip="${3:-}"; proto="${4:-}"
+    port="${5:-5201}"; duration_s="${6:-5}"; udp_mbps="${7:-10}"; tos_hex="${8:-}"
+
+    [[ -n "$src_ns" ]] || die_json "src_ns required"
+    [[ -n "$dst_ns" ]] || die_json "dst_ns required"
+    [[ -n "$dst_ip" ]] || die_json "dst_ip required"
+    [[ -n "$proto" ]] || die_json "protocol required (tcp|udp)"
+
+    is_valid_ns "$src_ns" || die_json "invalid namespace: $src_ns"
+    is_valid_ns "$dst_ns" || die_json "invalid namespace: $dst_ns"
+    is_valid_ipv4 "$dst_ip" || die_json "invalid ipv4: $dst_ip"
+    is_valid_proto "$proto" || die_json "invalid protocol: $proto"
+    is_valid_tos "$tos_hex" || die_json "invalid tos (expected 0x.. byte): $tos_hex"
+
+    command -v iperf3 >/dev/null 2>&1 || die_json "iperf3 is not installed"
+    command -v timeout >/dev/null 2>&1 || die_json "timeout is not installed"
+
+    [[ "$port" =~ ^[0-9]+$ ]] || die_json "port must be integer"
+    [[ "$duration_s" =~ ^[0-9]+$ ]] || die_json "duration_seconds must be integer"
+    (( port >= 1 && port <= 65535 )) || die_json "port out of range (1-65535)"
+    (( duration_s >= 1 && duration_s <= 60 )) || die_json "duration out of range (1-60)"
+
+    if [[ "$proto" == "udp" ]]; then
+      [[ "$udp_mbps" =~ ^[0-9]+$ ]] || die_json "udp_mbps must be integer"
+      (( udp_mbps >= 1 && udp_mbps <= 10000 )) || die_json "udp_mbps out of range (1-10000)"
+    fi
+
+    tmp_server="$(mktemp)"
+    tmp_client="$(mktemp)"
+    cleanup() {
+      rm -f "$tmp_server" "$tmp_client"
+    }
+    trap cleanup EXIT
+
+    # Start iperf3 server in destination namespace (one test then exit)
+    # Use a short startup delay to ensure server is listening.
+    set +e
+    ip netns exec "$dst_ns" timeout 12 iperf3 -s -1 -p "$port" --json >"$tmp_server" 2>&1 &
+    server_pid=$!
+    set -e
+    sleep 0.3
+
+    # Run client in source namespace
+    client_cmd=(ip netns exec "$src_ns" timeout $((duration_s + 8)) iperf3 -c "$dst_ip" -p "$port" -t "$duration_s" --json)
+    if [[ "$proto" == "udp" ]]; then
+      client_cmd+=( -u -b "${udp_mbps}M" )
+    fi
+    if [[ -n "$tos_hex" ]]; then
+      client_cmd+=( -S "$tos_hex" )
+    fi
+
+    set +e
+    "${client_cmd[@]}" >"$tmp_client" 2>&1
+    client_exit=$?
+    set -e
+
+    # Ensure server exits; kill if it's still around.
+    set +e
+    wait "$server_pid" 2>/dev/null
+    wait_exit=$?
+    if kill -0 "$server_pid" 2>/dev/null; then
+      kill "$server_pid" 2>/dev/null || true
+    fi
+    set -e
+
+    server_out="$(cat "$tmp_server" || true)"
+    client_out="$(cat "$tmp_client" || true)"
+    esc_server="$(echo "$server_out" | json_escape)"
+    esc_client="$(echo "$client_out" | json_escape)"
+
+    ok="false"
+    if [[ $client_exit -eq 0 ]]; then ok="true"; fi
+
+    udp_mbps_json="null"
+    if [[ "$proto" == "udp" ]]; then udp_mbps_json="$udp_mbps"; fi
+    tos_json="null"
+    if [[ -n "$tos_hex" ]]; then tos_json="\"$tos_hex\""; fi
+
+    echo "{\"ok\":$ok,\"type\":\"iperf\",\"protocol\":\"$proto\",\"src_ns\":\"$src_ns\",\"dst_ns\":\"$dst_ns\",\"dst_ip\":\"$dst_ip\",\"port\":$port,\"duration_seconds\":$duration_s,\"udp_mbps\":$udp_mbps_json,\"tos\":$tos_json,\"exit_code\":$client_exit,\"server_exit_code\":$wait_exit,\"client_raw\":\"$esc_client\",\"server_raw\":\"$esc_server\"}"
     ;;
 
   *)

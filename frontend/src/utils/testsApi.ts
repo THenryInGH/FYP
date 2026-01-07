@@ -29,6 +29,28 @@ export async function pingTest(payload: { src_ns: string; dst_ip: string; count?
   return data as any;
 }
 
+export type IperfPayload = {
+  src_ns: string;
+  dst_ns: string;
+  dst_ip: string;
+  protocol: "tcp" | "udp";
+  port?: number;
+  duration_seconds?: number;
+  udp_mbps?: number; // only used for udp
+  tos?: string | null; // e.g. "0xb8"
+};
+
+export async function iperfTest(payload: IperfPayload) {
+  const res = await fetch(`${API_BASE}/tests/iperf`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders() },
+    body: JSON.stringify(payload),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data?.detail || `HTTP ${res.status}`);
+  return data as any;
+}
+
 
 
 

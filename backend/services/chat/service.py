@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from backend.services.llm.chat_history import system_prompt
 from backend.services.llm.groq_client import DEFAULT_MODEL, get_samples_json
 from backend.services.onos.onos_client import get_network_info
+from backend.services.devices.service import enrich_onos_devices_with_friendly_names, enrich_onos_hosts_with_friendly_names, sync_devices_from_onos, sync_hosts_from_onos
 from database.models import Conversation, Message
 
 
@@ -73,7 +74,7 @@ def list_messages(db: Session, *, user_id: int, conversation_id: int, limit: int
     )
 
 
-def _build_grounded_user_prompt(user_text: str, *, use_rag: bool) -> Tuple[str, Dict[str, float]]:
+def _build_grounded_user_prompt(db: Session, user_text: str, *, use_rag: bool) -> Tuple[str, Dict[str, float]]:
     timings: Dict[str, float] = {}
     t_start = time.perf_counter()
 
@@ -85,7 +86,28 @@ def _build_grounded_user_prompt(user_text: str, *, use_rag: bool) -> Tuple[str, 
         samples = {"summary": [], "raw_samples": [], "note": "RAG disabled by request.", "timings": {}}
 
     t_net = time.perf_counter()
+    # Refresh devices/hosts in DB so friendly-name enrichment uses latest ONOS ids (MAC can change after resets).
+    try:
+        sync_devices_from_onos(db)
+    except Exception:
+        pass
+    try:
+        sync_hosts_from_onos(db)
+    except Exception:
+        pass
+
     network_info = get_network_info()
+    # Enrich with DB friendly names for grounding (LLM can map "h1" -> current host.id (MAC-based)).
+    devices = (network_info or {}).get("devices") or []
+    hosts = (network_info or {}).get("hosts") or []
+    if isinstance(devices, dict):
+        devices = devices.get("devices") or []
+    if isinstance(hosts, dict):
+        hosts = hosts.get("hosts") or []
+    if isinstance(devices, list):
+        enrich_onos_devices_with_friendly_names(db, devices)
+    if isinstance(hosts, list):
+        enrich_onos_hosts_with_friendly_names(db, hosts)
     timings["network_fetch_seconds"] = time.perf_counter() - t_net
 
     samples_summary = samples.get("summary", [])
@@ -156,7 +178,7 @@ def send_message(
         .all()
     )
 
-    grounded_prompt, grounding_timings = _build_grounded_user_prompt(user_text, use_rag=use_rag)
+    grounded_prompt, grounding_timings = _build_grounded_user_prompt(db, user_text, use_rag=use_rag)
     _check_context_budget(history, grounded_prompt)
 
     selected_model = model or DEFAULT_MODEL

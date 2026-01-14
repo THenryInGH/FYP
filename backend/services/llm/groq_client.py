@@ -10,6 +10,14 @@ from groq import Groq
 
 from backend.services.llm.chat_history import add_message, get_history
 from backend.services.onos.onos_client import get_network_info
+from sqlalchemy.orm import Session
+
+from backend.services.devices.service import (
+    enrich_onos_devices_with_friendly_names,
+    enrich_onos_hosts_with_friendly_names,
+    sync_devices_from_onos,
+    sync_hosts_from_onos,
+)
 from database.rag.embedded_client import get_similar_samples
 
 load_dotenv()
@@ -21,6 +29,7 @@ DEFAULT_MODEL = "openai/gpt-oss-20b"
 def send_prompt(
     user_prompt: str,
     *,
+    db: Session | None = None,
     model: str | None = None,
     use_rag: bool = True,
 ) -> Dict[str, Any]:
@@ -44,7 +53,29 @@ def send_prompt(
         }
 
     t_network = time.perf_counter()
+    if db is not None:
+        # Keep DB rows fresh so host MAC-based IDs match current topology.
+        try:
+            sync_devices_from_onos(db)
+        except Exception:
+            pass
+        try:
+            sync_hosts_from_onos(db)
+        except Exception:
+            pass
+
     network_info = get_network_info()
+    if db is not None:
+        devices = (network_info or {}).get("devices") or []
+        hosts = (network_info or {}).get("hosts") or []
+        if isinstance(devices, dict):
+            devices = devices.get("devices") or []
+        if isinstance(hosts, dict):
+            hosts = hosts.get("hosts") or []
+        if isinstance(devices, list):
+            enrich_onos_devices_with_friendly_names(db, devices)
+        if isinstance(hosts, list):
+            enrich_onos_hosts_with_friendly_names(db, hosts)
     timings["network_fetch_seconds"] = time.perf_counter() - t_network
 
     samples_summary = json.dumps(samples.get("summary", []), indent=2)

@@ -1,10 +1,20 @@
+import { getAccessToken } from "./authStorage";
+
 const API_BASE = import.meta.env.VITE_API_BASE ?? "http://localhost:8000";
+
+function authHeaders() {
+  const token = getAccessToken();
+  const headers: Record<string, string> = {};
+  if (token) headers.Authorization = `Bearer ${token}`;
+  return headers;
+}
 
 async function get(endpoint: string) {
   try {
-    const res = await fetch(`${API_BASE}/onos${endpoint}`);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
+    const res = await fetch(`${API_BASE}/onos${endpoint}`, { headers: { ...authHeaders() } });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data?.detail || `HTTP ${res.status}`);
+    return data;
   } catch (err) {
     console.error("ONOS API error:", err);
     return null;
@@ -17,13 +27,13 @@ async function post(endpoint: string, body: any) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...authHeaders(),
       },
       body: JSON.stringify(body),
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-    const text = await res.text();
-    return text ? JSON.parse(text) : { status: res.status };
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data?.detail || `HTTP ${res.status}`);
+    return data;
   } catch (err) {
     console.error("ONOS POST error:", err);
     return null;
@@ -34,8 +44,10 @@ async function del(endpoint: string) {
   try {
     const res = await fetch(`${API_BASE}/onos${endpoint}`, {
       method: "DELETE",
+      headers: { ...authHeaders() },
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data?.detail || `HTTP ${res.status}`);
     return true;
   } catch (err) {
     console.error("ONOS DELETE error:", err);

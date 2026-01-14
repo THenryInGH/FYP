@@ -5,9 +5,11 @@ from typing import Any
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 from backend.services.llm.groq_client import send_prompt
 from backend.services.auth.deps import get_current_user
+from database import get_db
 
 router = APIRouter(tags=["chat"])
 
@@ -19,7 +21,11 @@ class GenerateRequest(BaseModel):
 
 
 @router.post("/generate")
-def generate_response(req: GenerateRequest, _current_user=Depends(get_current_user)) -> dict[str, Any]:
+def generate_response(
+    req: GenerateRequest,
+    db: Session = Depends(get_db),
+    _current_user=Depends(get_current_user),
+) -> dict[str, Any]:
     """
     Backward-compatible endpoint: mirrors llm-engine/agent.py /generate.
 
@@ -29,6 +35,7 @@ def generate_response(req: GenerateRequest, _current_user=Depends(get_current_us
     try:
         result = send_prompt(
             req.prompt,
+            db=db,
             model=req.model,
             use_rag=req.use_rag,
         )

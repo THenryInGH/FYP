@@ -12,6 +12,7 @@ from backend.api.devices import router as devices_router
 from backend.api.hosts import router as hosts_router
 from backend.api.onos import router as onos_router
 from backend.api.tests import router as tests_router
+from backend.api.docs_assets import router as docs_assets_router
 import os
 
 
@@ -47,6 +48,9 @@ def create_app() -> FastAPI:
 
     # Testbed verification endpoints (ping/iperf)
     app.include_router(tests_router)
+
+    # Docs assets (diagrams/charts) served from backend
+    app.include_router(docs_assets_router)
 
     # New: backend-owned ONOS proxy endpoints (optional to adopt on frontend).
     app.include_router(onos_router, prefix="/onos", tags=["onos"])

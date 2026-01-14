@@ -10,9 +10,11 @@ from backend.services.auth.deps import get_current_user
 from backend.services.devices.service import (
     delete_managed_device,
     get_device_name_map,
+    host_stable_id,
     list_managed_devices,
     set_device_friendly_name,
     sync_devices_from_onos,
+    sync_hosts_from_onos,
 )
 from database import get_db
 
@@ -67,14 +69,22 @@ def managed_devices(db: Session = Depends(get_db)) -> Dict[str, Any]:
 
     This is meant for the Devices management page.
     """
-    # Refresh live ONOS devices (best-effort; if ONOS is down, we still return DB rows)
+    # Refresh live ONOS devices/hosts (best-effort; if ONOS is down, we still return DB rows)
     live_ids: set[str] = set()
+    live_host_ids: set[str] = set()
     try:
         onos_payload = sync_devices_from_onos(db)
         live = (onos_payload or {}).get("devices", []) or []
         live_ids = {d.get("id") for d in live if d.get("id")}
     except Exception:
         live_ids = set()
+
+    try:
+        host_payload = sync_hosts_from_onos(db)
+        live_hosts = (host_payload or {}).get("hosts", []) or []
+        live_host_ids = {host_stable_id(h) for h in live_hosts if host_stable_id(h)}
+    except Exception:
+        live_host_ids = set()
 
     rows = list_managed_devices(db)
     out = []
@@ -84,7 +94,7 @@ def managed_devices(db: Session = Depends(get_db)) -> Dict[str, Any]:
                 "device_id": r.device_id,
                 "name": r.name,
                 "type": r.type,
-                "active": (r.device_id in live_ids) if r.type != "host" else None,
+                "active": (r.device_id in live_host_ids) if r.type == "host" else (r.device_id in live_ids),
             }
         )
     return {"devices": out}

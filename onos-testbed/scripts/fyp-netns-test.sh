@@ -123,11 +123,11 @@ case "$cmd" in
     # Parse basic metrics (best-effort)
     loss_pct=""
     rtt_avg_ms=""
-    summary_line=$(echo "$stdout" | grep -E "packet loss" | tail -n 1)
+    summary_line=$(echo "$stdout" | grep -E "packet loss" | tail -n 1 || true)
     if [[ -n "$summary_line" ]]; then
       loss_pct=$(echo "$summary_line" | awk -F',' '{for(i=1;i<=NF;i++){if($i~/% packet loss/){gsub(/^[ \t]+|[ \t]+$/,"",$i); print $i}}}' | awk '{print $1}' | tr -d '%')
     fi
-    rtt_line=$(echo "$stdout" | grep -E "^rtt |^round-trip " | tail -n 1)
+    rtt_line=$(echo "$stdout" | grep -E "^rtt |^round-trip " | tail -n 1 || true)
     if [[ -n "$rtt_line" ]]; then
       # rtt min/avg/max/mdev = 0.026/0.030/0.034/0.003 ms
       rtt_avg_ms=$(echo "$rtt_line" | awk -F'=' '{print $2}' | awk '{print $1}' | cut -d/ -f2)

@@ -41,9 +41,13 @@ def ping_test(req: PingTestRequest, _current_user=Depends(get_current_user)) -> 
         count=req.count,
         timeout_seconds=req.timeout_seconds,
     )
+    # If the runner executed and produced a structured ping result, return it even if unreachable.
+    # This lets the UI show loss/RTT/raw output instead of a generic error.
+    if result.get("type") == "ping":
+        return result
     if not result.get("ok"):
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=_detail_from_runner(result, "Ping failed"),
         )
     return result

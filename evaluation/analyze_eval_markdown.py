@@ -27,6 +27,7 @@ import seaborn as sns
 
 # Matplotlib is used via seaborn; importing pyplot here keeps the script explicit.
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 RAG_WITHOUT = "without_rag"
@@ -261,66 +262,164 @@ def plot_charts(avg_df: pd.DataFrame, out_dir: Path) -> None:
     if avg_df.empty:
         return
 
-    rag_label = {RAG_WITHOUT: "Without RAG", RAG_WITH: "With RAG"}
-    plot_df = avg_df.copy()
-    plot_df["rag_label"] = plot_df["rag"].map(rag_label)
-
     # Style: simple, report-friendly.
     sns.set_theme(style="whitegrid")
 
-    # --- Accuracy chart ---
-    plt.figure(figsize=(10, 4.5))
-    ax = sns.barplot(
-        data=plot_df,
-        x="model",
-        y="avg_accuracy",
-        hue="rag_label",
-        errorbar=None,
-    )
-    ax.set_title("Average accuracy by model")
-    ax.set_xlabel("Model")
-    ax.set_ylabel("Average accuracy")
-    ax.set_ylim(0, 100)
-    plt.xticks(rotation=20, ha="right")
-    plt.tight_layout()
-    plt.savefig(out_dir / "avg_accuracy_by_model.png", dpi=200)
-    plt.close()
+    rag_label = {RAG_WITHOUT: "Without RAG", RAG_WITH: "With RAG"}
 
-    # --- Response time chart (linear) ---
-    plt.figure(figsize=(10, 4.5))
-    ax = sns.barplot(
-        data=plot_df,
-        x="model",
-        y="avg_response_time_ms",
-        hue="rag_label",
-        errorbar=None,
-    )
-    ax.set_title("Average response time by model")
-    ax.set_xlabel("Model")
-    ax.set_ylabel("Average response time (ms)")
-    plt.xticks(rotation=20, ha="right")
-    plt.tight_layout()
-    plt.savefig(out_dir / "avg_response_time_by_model.png", dpi=200)
-    plt.close()
+    def _plot_grouped_bars_with_pct_diff(
+        *,
+        df: pd.DataFrame,
+        value_col: str,
+        title: str,
+        ylabel: str,
+        out_path: Path,
+        ylim: tuple[float, float] | None = None,
+        yscale: str | None = None,
+        diff_metric: str = "pct_diff",
+        label_decimals: int = 2,
+    ) -> None:
+        """
+        Plot grouped bars (without vs with RAG per model) and annotate difference.
 
-    # --- Response time chart (log scale) ---
+        diff_metric:
+        - "pct_change": ((with - without) / without) * 100   (can be undefined if without==0)
+        - "pct_diff"  : (|with - without| / max(with, without)) * 100  (always defined unless both 0)
+
+        The annotation is drawn as a vertical "ruler" between the two bars (like your screenshot).
+        """
+
+        # Wide format: index=model, cols=rag modes.
+        wide = df.pivot(index="model", columns="rag", values=value_col)
+        models = list(wide.index)
+
+        without_vals = wide.get(RAG_WITHOUT)
+        with_vals = wide.get(RAG_WITH)
+
+        x = np.arange(len(models))
+        width = 0.36
+
+        fig, ax = plt.subplots(figsize=(10, 4.5))
+
+        b1 = ax.bar(
+            x - width / 2,
+            without_vals,
+            width,
+            label=rag_label[RAG_WITHOUT],
+            color=sns.color_palette()[0],
+        )
+        b2 = ax.bar(
+            x + width / 2,
+            with_vals,
+            width,
+            label=rag_label[RAG_WITH],
+            color=sns.color_palette()[1],
+        )
+
+        ax.set_title(title)
+        ax.set_xlabel("Model")
+        ax.set_ylabel(ylabel)
+        ax.set_xticks(x)
+        ax.set_xticklabels(models, rotation=20, ha="right")
+        ax.legend()
+
+        if yscale:
+            ax.set_yscale(yscale)
+        if ylim is not None:
+            ax.set_ylim(*ylim)
+
+        # Draw vertical "ruler" between each pair of bars + label.
+        # We compute positions from the bar containers (reliable even if ordering changes).
+        for rect_without, rect_with, v_without, v_with in zip(
+            b1.patches, b2.patches, without_vals, with_vals, strict=False
+        ):
+            if v_without is None or v_with is None or pd.isna(v_without) or pd.isna(v_with):
+                continue
+            v_without_f = float(v_without)
+            v_with_f = float(v_with)
+
+            # Compute label value
+            label: str | None = None
+            if diff_metric == "pct_change":
+                if v_without_f == 0.0:
+                    label = None
+                else:
+                    diff_pct = (v_with_f - v_without_f) / v_without_f * 100.0
+                    label = f"{diff_pct:+.{label_decimals}f}%"
+            elif diff_metric == "pct_diff":
+                denom = max(abs(v_with_f), abs(v_without_f))
+                if denom == 0.0:
+                    label = None
+                else:
+                    diff_pct = abs(v_with_f - v_without_f) / denom * 100.0
+                    label = f"{diff_pct:.{label_decimals}f}%"
+            else:
+                raise ValueError(f"Unknown diff_metric: {diff_metric}")
+
+            x1 = rect_without.get_x() + rect_without.get_width() / 2
+            x2 = rect_with.get_x() + rect_with.get_width() / 2
+            x_mid = (x1 + x2) / 2
+
+            y1 = rect_without.get_height()
+            y2 = rect_with.get_height()
+            y_low, y_high = sorted([y1, y2])
+
+            # Ruler caps size (a small fraction of bar width)
+            cap = (x2 - x1) * 0.25
+
+            # Vertical ruler line and caps
+            ax.plot([x_mid, x_mid], [y_low, y_high], color="black", linewidth=1)
+            ax.plot([x_mid - cap, x_mid + cap], [y_low, y_low], color="black", linewidth=1)
+            ax.plot([x_mid - cap, x_mid + cap], [y_high, y_high], color="black", linewidth=1)
+
+            # Label next to the ruler, centered vertically
+            if label is not None:
+                ax.text(
+                    x_mid - cap - 0.02,
+                    (y_low + y_high) / 2,
+                    label,
+                    ha="right",
+                    va="center",
+                    fontsize=9,
+                    color="black",
+                )
+
+        fig.tight_layout()
+        fig.savefig(out_path, dpi=200)
+        plt.close(fig)
+
+    _plot_grouped_bars_with_pct_diff(
+        df=avg_df,
+        value_col="avg_accuracy",
+        title="Average accuracy by model",
+        ylabel="Average accuracy",
+        out_path=out_dir / "avg_accuracy_by_model.png",
+        ylim=(0, 100),
+        diff_metric="pct_diff",
+        label_decimals=2,
+    )
+
+    _plot_grouped_bars_with_pct_diff(
+        df=avg_df,
+        value_col="avg_response_time_ms",
+        title="Average response time by model",
+        ylabel="Average response time (ms)",
+        out_path=out_dir / "avg_response_time_by_model.png",
+        diff_metric="pct_diff",
+        label_decimals=2,
+    )
+
     # Helpful when one model is a big outlier (prevents squashing other bars).
-    plt.figure(figsize=(10, 4.5))
-    ax = sns.barplot(
-        data=plot_df,
-        x="model",
-        y="avg_response_time_ms",
-        hue="rag_label",
-        errorbar=None,
+    _plot_grouped_bars_with_pct_diff(
+        df=avg_df,
+        value_col="avg_response_time_ms",
+        title="Average response time by model (log scale)",
+        ylabel="Average response time (ms, log)",
+        out_path=out_dir / "avg_response_time_by_model_log.png",
+        yscale="log",
+        diff_metric="pct_diff",
+        label_decimals=2,
     )
-    ax.set_yscale("log")
-    ax.set_title("Average response time by model (log scale)")
-    ax.set_xlabel("Model")
-    ax.set_ylabel("Average response time (ms, log)")
-    plt.xticks(rotation=20, ha="right")
-    plt.tight_layout()
-    plt.savefig(out_dir / "avg_response_time_by_model_log.png", dpi=200)
-    plt.close()
 
 
 def main() -> int:

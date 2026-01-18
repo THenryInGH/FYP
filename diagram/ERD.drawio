@@ -17,32 +17,19 @@
           <mxGeometry x="640" y="40" width="300" height="170" as="geometry" />
         </mxCell>
 
-        <mxCell id="chat_history" value="&lt;b&gt;chat_history (legacy)&lt;/b&gt;&lt;br/&gt;PK chat_id&lt;br/&gt;FK user_id → users.user_id&lt;br/&gt;prompt&lt;br/&gt;response&lt;br/&gt;created_at" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f9fafb;strokeColor=#6b7280;" parent="1" vertex="1">
-          <mxGeometry x="40" y="230" width="240" height="150" as="geometry" />
-        </mxCell>
-
-        <mxCell id="configuration_history" value="&lt;b&gt;configuration_history&lt;/b&gt;&lt;br/&gt;PK config_id&lt;br/&gt;FK user_id → users.user_id&lt;br/&gt;intent_text&lt;br/&gt;config_json&lt;br/&gt;status&lt;br/&gt;applied_at" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1f2937;" parent="1" vertex="1">
-          <mxGeometry x="320" y="230" width="300" height="190" as="geometry" />
-        </mxCell>
-
         <mxCell id="devices" value="&lt;b&gt;devices&lt;/b&gt;&lt;br/&gt;PK device_id&lt;br/&gt;name&lt;br/&gt;type&lt;br/&gt;annotations&lt;br/&gt;extra_metadata" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1f2937;" parent="1" vertex="1">
-          <mxGeometry x="40" y="440" width="240" height="150" as="geometry" />
+          <mxGeometry x="40" y="260" width="240" height="150" as="geometry" />
         </mxCell>
 
         <mxCell id="config_samples" value="&lt;b&gt;config_samples&lt;/b&gt;&lt;br/&gt;PK sample_id&lt;br/&gt;category&lt;br/&gt;intent_text&lt;br/&gt;config_json&lt;br/&gt;extra_metadata&lt;br/&gt;embedding (vector)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#1f2937;" parent="1" vertex="1">
           <mxGeometry x="640" y="260" width="300" height="190" as="geometry" />
         </mxCell>
 
-        <mxCell id="edge_users_conversations" value="1..N" style="endArrow=block;endFill=1;strokeColor=#374151;html=1;rounded=0;" parent="1" source="users" target="conversations" edge="1">
+        <!-- Crow's foot relationships -->
+        <mxCell id="edge_users_conversations" value="" style="startArrow=ERone;startFill=1;endArrow=ERmany;endFill=1;strokeColor=#374151;html=1;rounded=0;" parent="1" source="users" target="conversations" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="edge_conversations_messages" value="1..N" style="endArrow=block;endFill=1;strokeColor=#374151;html=1;rounded=0;" parent="1" source="conversations" target="messages" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="edge_users_chat_history" value="1..N" style="endArrow=block;endFill=1;strokeColor=#6b7280;html=1;rounded=0;" parent="1" source="users" target="chat_history" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="edge_users_configuration_history" value="1..N" style="endArrow=block;endFill=1;strokeColor=#374151;html=1;rounded=0;" parent="1" source="users" target="configuration_history" edge="1">
+        <mxCell id="edge_conversations_messages" value="" style="startArrow=ERone;startFill=1;endArrow=ERmany;endFill=1;strokeColor=#374151;html=1;rounded=0;" parent="1" source="conversations" target="messages" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>

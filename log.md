@@ -23,20 +23,26 @@ sudo rm -rf /opt/onos/apache-karaf-4.2.9/data/cache/*
 ```
 3. clean topo (may need to run twice)
 ```bash
-cd FYP/onos-testbed/scripts
+cd onos-testbed/scripts
 bash clean-topo.sh
 ```
 
 4. start onos
-`sudo systemctl start onos`
+```bash
+sudo systemctl start onos
 
+app activate org.onosproject.fwd
+```
 5. setup topo 
 ```bash
 cd FYP/onos-testbed/scripts
 bash mesh-topo.sh
 ```
 
-6. (Optional) ping between hosts if ping test failed the first time
+6. testing link failure
+```bash
+sudo ip link set veth-s1-s4 down
+```
 
 ## 3. Project structure update
 - combine all service at backend

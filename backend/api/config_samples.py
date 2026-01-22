@@ -35,14 +35,20 @@ def create_sample(
     db: Session = Depends(get_db),
     _current_user=Depends(get_current_user),
 ) -> ConfigSamplePublic:
-    row = create_config_sample(
-        db,
-        category=req.category,
-        intent_text=req.intent_text,
-        config_json=req.config_json,
-        extra_metadata=req.extra_metadata,
-    )
-    return ConfigSamplePublic.model_validate(row)
+    try:
+        row = create_config_sample(
+            db,
+            category=req.category,
+            intent_text=req.intent_text,
+            config_json=req.config_json,
+            extra_metadata=req.extra_metadata,
+        )
+        return ConfigSamplePublic.model_validate(row)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create sample: {exc}",
+        )
 
 
 @router.delete("/{sample_id}", status_code=status.HTTP_204_NO_CONTENT)

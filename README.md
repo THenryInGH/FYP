@@ -4,20 +4,14 @@
 
 
 ## Problem statement
-| **Problem Topic**                     | **Problem Statement (Clear & Concise)**                                                        | **Why It Matters (Improved Explanation)**                                                                                               |
-| ------------------------------------- | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| **Manual Configuration**              | Network administrators must configure ONOS intents and rules manually.                         | Similar to legacy networks, manual configuration slows workflow, introduces human error, and becomes impractical as the network scales. |
-| **Low-Level Complexity**              | Users without SDN expertise struggle to express configurations at the low-level policy format. | High technical requirement limits SDN accessibility and increases deployment difficulty for non-specialist users.                       |
-| **Non-Automated Resource Allocation** | Bandwidth control, QoS rules, and routing decisions are not intent-driven or automated.        | This results in congestion, suboptimal utilisation, and poor performance guarantees for traffic flows.                                  |
-| **Lack of Integrated Monitoring**     | Monitoring, intent execution, and feedback are separated into multiple workflows.              | Without real-time visibility and feedback loops, administrators cannot verify policy enforcement or respond to changes quickly.         |
+- **Rigid and manual workflows**: Administrators must translate high-level business goals into complex, vendor-specific flow rules. This is slow and prone to human error.
+- **Context-blindness and hallucination**: General LLMs lack real-time topology and network state, so they can produce incorrect or unsafe configurations.
+- **Messy management and static knowledge**: There is no unified interface for monitoring and control, and no feedback-driven knowledge base to improve the model over time.
 
 ## Objective
-| Problem Topic                         | SMART Objective                                                                                                                                                                                                                                                                        |
-| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Manual Configuration**              | Develop an intent-driven configuration module that converts natural-language requests into ONOS policies with at least **90% correct translation accuracy**, evaluated using a predefined intent dataset by Week 10 of development.                                                    |
-| **Low-Level Complexity**              | Build a user-friendly web interface that allows non-expert users to input high-level intents and deploy configurations, achieving a **≥ 30% reduction in configuration time** compared to CLI-based deployment during usability testing.                                               |
-| **Non-Automated Resource Allocation** | Implement an automated resource allocation mechanism (QoS, bandwidth, multipath routing) that maintains **stable throughput with ≤ 10% packet loss under synthetic load**, and demonstrates **≥ 20% better flow distribution** compared to unmanaged routing, before final evaluation. |
-| **Lack of Integrated Monitoring**     | Integrate real-time network monitoring that visualises topology state, link utilisation, and flow status with **data refresh intervals ≤ 3 seconds**, enabling administrators to verify intent enforcement live by final deployment phase.                                             |
+- **Integrated dashboard and knowledge base**: Provide a real-time dashboard with a feedback-driven knowledge base (vector DB) that stores and retrieves successful configuration samples.
+- **Context-aware RAG pipeline**: Inject live topology and similar configuration samples into the LLM prompt to improve technical accuracy.
+- **User intent translation**: Build a natural language interface that converts high-level intents into ONOS-compatible JSON configurations.
 
 ## Scope
 1. Connectivity：   
@@ -38,11 +32,11 @@
 5. Topology awareness and status retrieval
     - A respontive UI developed using React
 
-### Future planning
-6. Dynamic rerouting based on congestion/failures (IMR)
-7. Automate documentation process 
-8. Agent install flow rules itself
-9. Seek for a next version of FYP, escape from the limitation of intent framework 
+## Future planning
+1. Dynamic intent conflict resolution
+2. Rely on openflow flow rules instead of onos intent framework to expand scope
+3. Fine-tune LLM with more data collection
+4. Multi-controller, multi language support
 
 Example intents:
 - “Throttle bulk backups after 1 a.m. to keep latency low for production.”
@@ -61,38 +55,32 @@ Example intents:
 ---
 
 ## Repository layout 
-- significant components in this project
+- Significant components in this project
 ```
 FYP/
 ├─ backend/ 
-  ├─ main.py (FastAPI entrypoint; replaces llm-engine/agent.py)
-  ├─ api/
-    ├─ auth.py (login/me) [planned]
-    ├─ chat.py (generate endpoint)
-    ├─ onos.py (proxy ONOS endpoints)
-  ├─ services/
-    ├─ llm/ (groq_client.py, prompt building)
-    ├─ onos/ (onos_client.py, caching)
-    ├─ rag/ (embedded client/server helpers)
-  ├─ db/
-    ├─ models.py (move from database/models.py) [planned]
-    ├─ session.py / database.py (DB engine/session) [planned]
-    ├─ seed.py [planned]
+  ├─ main.py (FastAPI entrypoint)
+  ├─ api/ (auth, chat, conversations, devices, hosts, config samples, tests, ONOS proxy)
+  ├─ schemas/ (Pydantic request/response models)
+  ├─ services/ (auth, chat, devices, config samples, llm, onos, rag, testbed, users)
 ├─ database/ 
-  ├─ data/
+  ├─ models.py (SQLAlchemy models)
+  ├─ database.py (engine/session)
+  ├─ seed_data.py (seed scripts)
+  ├─ rag/ (embeddings + similarity search)
+  ├─ data/ (seed JSON files)
 ├─ diagram/
 ├─ evaluation/ 
 ├─ frontend/
   ├─ src
-    ├─ assets
-    ├─ components/
-    ├─ utils/
-    ├─ hooks/
-├─ llm-engine/
-  ├─ models/
-  ├─ agent.py
+    ├─ auth/ (Auth context)
+    ├─ components/ (dashboard, chat, pages, layout)
+    ├─ hooks/ (topology data)
+    ├─ utils/ (API clients)
+├─ llm-engine/ (legacy local LLM experiments)
 ├─ onos-testbed/
-  ├─ scripts
+  ├─ scripts/ (topology + test runner)
+  ├─ notes/ (testbed docs)
 ├─ main.py
 ```
 
@@ -100,21 +88,19 @@ FYP/
 
 ## Tech stack
 - SDN Testbed
-  - ONOS Controller
-  - ONOS Intent Framework
-  - Linux namespaces
-  - OpenVSwitch
+  - ONOS Controller + Intent Framework
+  - Open vSwitch
+  - Linux namespaces (Mininet-based testbed)
 - Frontend
   - Vite + React + TypeScript
-  - SWC React plugin
-  - Tailwind CSS (via @tailwindcss/vite)
-  - ESLint (TS + React Hooks)
-- LLM Engine
-  - Llama-server (chat completions / responses with tool calling)
-  - FastAPI
+  - Tailwind CSS
+  - D3-force + Chart.js
+- Backend
+  - FastAPI + Pydantic
+  - Groq API client (LLM inference)
+  - RAG with SentenceTransformers
 - Database
-  - PostgreSQL
-  - pgvector
+  - PostgreSQL + pgvector
   - SQLAlchemy
 ---
 
@@ -125,41 +111,39 @@ FYP/
 - Package manager: npm, pnpm, or yarn
 
 ### Ports using
-#### Host A
-1. `5000`: Backend API 
+1. `8000`: Backend API 
 2. `5173`: React frontend
 3. `6653`: ONOS Listening OpenFlow
 4. `8181`: ONOS GUI 
-#### Host B
-1. `0.0.0.0:5000`: backend API endpoint (FastAPI)
-2. `localhost:8080`: llama-server end point
-### Hosts Specification
-#### Host A (Supermicro)
+
+### Host Specification
 - CPU: Intel(R) Xeon(R) CPU D-1528 @ 1.90GHz
 - Memory: 32 GB
 - OS: Ubuntu 24.04.3 LTS
 - No. of threads: 12
-#### Host B (GPU)
-- CPU: 
-- GPU: Nvdia RTX 3080 Ti (12 GB VRAM)
-- Memory: 64 GB
-- OS: Ubuntu 24
-- No. of threads: 16
 
 ### Setup steps
-#### Host B
-1. Running model using llama-server
+1. Set required environment variables
 ```bash
-cd FYP
-llama-server -m ./llm-engine/models/gpt-oss/gpt-oss-20b-mxfp4.gguf --n-cpu-moe 36 --n-gpu-layers 999 -c 0 --port 8080 
+export GROQ_API_KEY=your_key
+export ONOS_API_URL=http://127.0.0.1:8181/onos/v1
+export ONOS_USER=onos
+export ONOS_PASS=rocks
 ```
 
-2. start Backend FastAPI server (new structure)
+2. Start backend FastAPI server
 ```bash
 cd FYP
-uv run uvicorn backend.main:app --host 0.0.0.0 --port 5000
-``` 
+uv run uvicorn backend.main:app --host 0.0.0.0 --port 8000
+```
 
-> Note: `llm-engine/agent.py` is the older entrypoint. We keep it during migration,
-> but the backend should now be started from `backend/main.py`.
+3. Start frontend (separate terminal)
+```bash
+cd FYP/frontend
+npm install
+npm run dev
+```
+
+> Note: `llm-engine/agent.py` and `llm-engine/` are legacy local-LLM experiments.
+> The current backend uses the Groq API by default.
 
